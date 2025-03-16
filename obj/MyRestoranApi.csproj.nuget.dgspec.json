@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\Администратор\\Desktop\\Диплом\\MyRestoranApi\\MyRestoranApi.csproj": {}
+    "C:\\Users\\Администратор\\Desktop\\MyRestoranApi\\MyRestoranApi.csproj": {}
   },
   "projects": {
-    "C:\\Users\\Администратор\\Desktop\\Диплом\\MyRestoranApi\\MyRestoranApi.csproj": {
+    "C:\\Users\\Администратор\\Desktop\\MyRestoranApi\\MyRestoranApi.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\Администратор\\Desktop\\Диплом\\MyRestoranApi\\MyRestoranApi.csproj",
+        "projectUniqueName": "C:\\Users\\Администратор\\Desktop\\MyRestoranApi\\MyRestoranApi.csproj",
         "projectName": "MyRestoranApi",
-        "projectPath": "C:\\Users\\Администратор\\Desktop\\Диплом\\MyRestoranApi\\MyRestoranApi.csproj",
+        "projectPath": "C:\\Users\\Администратор\\Desktop\\MyRestoranApi\\MyRestoranApi.csproj",
         "packagesPath": "C:\\Users\\Администратор\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\Администратор\\Desktop\\Диплом\\MyRestoranApi\\obj\\",
+        "outputPath": "C:\\Users\\Администратор\\Desktop\\MyRestoranApi\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
