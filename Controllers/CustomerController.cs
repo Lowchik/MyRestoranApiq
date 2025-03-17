@@ -47,14 +47,14 @@ public class CustomerController : ControllerBase
     [HttpGet("exists")]
     public async Task<IActionResult> PhoneExists(string phone)
     {
-        // Убираем все пробелы и символ "+" из номера телефона
-        var formattedPhone = phone.Trim().Replace(" ", "").TrimStart('+');
+        // Просто получаем номер телефона, как он есть, без удаления символа '+'
+        var formattedPhone = phone.Trim();
 
         // Выводим, что получилось после форматирования
         Console.WriteLine($"Formatted phone: {formattedPhone}");
 
         var customer = await _context.Customers
-            .FirstOrDefaultAsync(c => c.Phone.Replace(" ", "").TrimStart('+') == formattedPhone);
+            .FirstOrDefaultAsync(c => c.Phone == formattedPhone);
 
         if (customer != null)
         {
@@ -63,6 +63,7 @@ public class CustomerController : ControllerBase
 
         return Ok(false); // Не найден
     }
+
 
 
 }
