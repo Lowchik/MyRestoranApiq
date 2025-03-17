@@ -3279,11 +3279,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Администратор\\Desktop\\MyRestoranApi\\MyRestoranApi.csproj",
+      "projectUniqueName": "C:\\Users\\Администратор\\Desktop\\MyRestoranApiq\\MyRestoranApi.csproj",
       "projectName": "MyRestoranApi",
-      "projectPath": "C:\\Users\\Администратор\\Desktop\\MyRestoranApi\\MyRestoranApi.csproj",
+      "projectPath": "C:\\Users\\Администратор\\Desktop\\MyRestoranApiq\\MyRestoranApi.csproj",
       "packagesPath": "C:\\Users\\Администратор\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\Администратор\\Desktop\\MyRestoranApi\\obj\\",
+      "outputPath": "C:\\Users\\Администратор\\Desktop\\MyRestoranApiq\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
