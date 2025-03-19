@@ -7,21 +7,21 @@ namespace MyRestoranApi.Data
     public class Customer
     {
         [Key]
-        [Column("id")] // Убедитесь, что здесь указано правильное имя столбца
-        public int Id { get; set; } // Поле id, будет автоинкрементироваться
+        [Column("id")]
+        public int Id { get; set; }
 
-        [Column("first_name")] // Соответствует полю first_name в базе
-        [Required] // Убедимся, что поле обязательно для заполнения
-        [MaxLength(100)] // Устанавливаем максимальную длину строки
-        public string FirstName { get; set; }
-
-        [Column("last_name")] // Соответствует полю last_name в базе
+        [Column("first_name")]
         [Required]
         [MaxLength(100)]
-        public string LastName { get; set; }
+        public required string FirstName { get; set; }
 
-        [Column("phone")] // Соответствует полю phone в базе
-        [MaxLength(20)] // Максимальная длина, как указано в базе
-        public string Phone { get; set; }
+        [Column("last_name")]
+        [Required]
+        [MaxLength(100)]
+        public required string LastName { get; set; }
+
+        [Column("phone")]
+        [MaxLength(20)]
+        public required string Phone { get; set; }
     }
 }
