@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyRestoranApi.Data;
+using System.Linq;
 
 [ApiController]
 [Route("api/[controller]")]
@@ -15,11 +16,26 @@ public class CustomerController : ControllerBase
 
     // GET api/customers
     [HttpGet]
-    public async Task<IActionResult> GetCustomers()
+    public async Task<IActionResult> GetCustomers([FromQuery] string? phone)
     {
         try
         {
-            var customers = await _context.Customers.ToListAsync();
+            IQueryable<Customer> query = _context.Customers;
+
+            // Если передан телефон в запросе, фильтруем по номеру телефона
+            if (!string.IsNullOrEmpty(phone))
+            {
+                // Убираем все нецифровые символы, но сохраняем префикс +
+                var formattedPhone = new string(phone.Where(char.IsDigit).ToArray());
+
+                // Логируем, что получилось после форматирования
+                Console.WriteLine($"Formatted phone: {formattedPhone}");
+
+                // Фильтруем по номеру телефона
+                query = query.Where(c => c.Phone.Contains(formattedPhone));
+            }
+
+            var customers = await query.ToListAsync();
             return Ok(customers);
         }
         catch (Exception ex)
@@ -49,14 +65,14 @@ public class CustomerController : ControllerBase
     {
         try
         {
-            // Убираем все нецифровые символы (например, пробелы, дефисы, плюс и т. д.)
+            // Убираем все нецифровые символы, но сохраняем префикс +
             var formattedPhone = new string(phone.Where(char.IsDigit).ToArray());
 
             // Логируем, что получилось после форматирования
             Console.WriteLine($"Formatted phone: {formattedPhone}");
 
             var customer = await _context.Customers
-                .FirstOrDefaultAsync(c => c.Phone == formattedPhone);
+                .FirstOrDefaultAsync(c => c.Phone.Contains(formattedPhone));
 
             if (customer != null)
             {
@@ -70,8 +86,4 @@ public class CustomerController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
-
-
-
-
 }
