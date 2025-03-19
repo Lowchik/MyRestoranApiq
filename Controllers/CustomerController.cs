@@ -47,22 +47,30 @@ public class CustomerController : ControllerBase
     [HttpGet("exists")]
     public async Task<IActionResult> PhoneExists(string phone)
     {
-        // Просто получаем номер телефона, как он есть, без удаления символа '+'
-        var formattedPhone = phone.Trim();
-
-        // Выводим, что получилось после форматирования
-        Console.WriteLine($"Formatted phone: {formattedPhone}");
-
-        var customer = await _context.Customers
-            .FirstOrDefaultAsync(c => c.Phone == formattedPhone);
-
-        if (customer != null)
+        try
         {
-            return Ok(true); // Найден
-        }
+            // Убираем все нецифровые символы (например, пробелы, дефисы, плюс и т. д.)
+            var formattedPhone = new string(phone.Where(char.IsDigit).ToArray());
 
-        return Ok(false); // Не найден
+            // Логируем, что получилось после форматирования
+            Console.WriteLine($"Formatted phone: {formattedPhone}");
+
+            var customer = await _context.Customers
+                .FirstOrDefaultAsync(c => c.Phone == formattedPhone);
+
+            if (customer != null)
+            {
+                return Ok(true); // Найден
+            }
+
+            return Ok(false); // Не найден
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, $"Internal server error: {ex.Message}");
+        }
     }
+
 
 
 
