@@ -31,8 +31,8 @@ public class CustomerController : ControllerBase
                 // Логируем, что получилось после форматирования
                 Console.WriteLine($"Formatted phone: {formattedPhone}");
 
-                // Используем Equals для точного совпадения
-                query = query.Where(c => c.Phone.Equals(formattedPhone));
+                // Используем Contains для поиска по номеру телефона (не только точное совпадение)
+                query = query.Where(c => c.Phone.Contains(formattedPhone));
             }
 
             var customers = await query.ToListAsync();
@@ -74,7 +74,7 @@ public class CustomerController : ControllerBase
 
             // Используем Equals для точного совпадения
             var customer = await _context.Customers
-                .FirstOrDefaultAsync(c => c.Phone.Equals(formattedPhone));
+                .FirstOrDefaultAsync(c => c.Phone.Contains(formattedPhone));
 
             if (customer != null)
             {
