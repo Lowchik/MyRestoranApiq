@@ -4,7 +4,7 @@ using MyRestoranApi.Data;
 using System.Linq;
 
 [ApiController]
-[Route("api/[controller]")]
+[Route("api/customers")] // Исправлено здесь
 public class CustomerController : ControllerBase
 {
     private readonly AppDbContext _context;
