@@ -4,7 +4,7 @@ using MyRestoranApi.Data;
 using System.Linq;
 
 [ApiController]
-[Route("api/[controller]")] // Исправлено здесь
+[Route("api/customer")] // Изменили здесь, теперь маршрут будет '/api/customer'
 public class CustomerController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -14,7 +14,7 @@ public class CustomerController : ControllerBase
         _context = context;
     }
 
-    // GET api/customers?phone=+79995556677
+    // GET api/customer?phone=+79995556677
     [HttpGet]
     public async Task<IActionResult> GetCustomers([FromQuery] string phone)
     {
@@ -50,7 +50,7 @@ public class CustomerController : ControllerBase
         }
     }
 
-    // POST api/customers
+    // POST api/customer
     [HttpPost]
     public async Task<IActionResult> CreateCustomer([FromBody] Customer customer)
     {
@@ -66,7 +66,7 @@ public class CustomerController : ControllerBase
         }
     }
 
-    // GET api/customers/exists?phone=+79995556677
+    // GET api/customer/exists?phone=+79995556677
     [HttpGet("exists")]
     public async Task<IActionResult> PhoneExists([FromQuery] string phone)
     {
