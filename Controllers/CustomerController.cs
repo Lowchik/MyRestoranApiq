@@ -4,7 +4,7 @@ using MyRestoranApi.Data;
 using System.Linq;
 
 [ApiController]
-[Route("api/customer")] // Изменили здесь, теперь маршрут будет '/api/customer'
+[Route("api/[controller]")] // Возвращаем прежний маршрут, теперь автоматически будет '/api/customer'
 public class CustomerController : ControllerBase
 {
     private readonly AppDbContext _context;
