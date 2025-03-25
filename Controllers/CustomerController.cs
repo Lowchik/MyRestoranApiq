@@ -31,8 +31,8 @@ public class CustomerController : ControllerBase
                 // Логируем, что получилось после форматирования
                 Console.WriteLine($"Formatted phone: {formattedPhone}");
 
-                // Фильтруем по номеру телефона
-                query = query.Where(c => c.Phone.Contains(formattedPhone));
+                // Используем Equals для точного совпадения
+                query = query.Where(c => c.Phone.Equals(formattedPhone));
             }
 
             var customers = await query.ToListAsync();
@@ -60,8 +60,9 @@ public class CustomerController : ControllerBase
         }
     }
 
+    // GET api/customers/exists
     [HttpGet("exists")]
-    public async Task<IActionResult> PhoneExists(string phone)
+    public async Task<IActionResult> PhoneExists([FromQuery] string phone)
     {
         try
         {
@@ -71,8 +72,9 @@ public class CustomerController : ControllerBase
             // Логируем, что получилось после форматирования
             Console.WriteLine($"Formatted phone: {formattedPhone}");
 
+            // Используем Equals для точного совпадения
             var customer = await _context.Customers
-                .FirstOrDefaultAsync(c => c.Phone.Contains(formattedPhone));
+                .FirstOrDefaultAsync(c => c.Phone.Equals(formattedPhone));
 
             if (customer != null)
             {
