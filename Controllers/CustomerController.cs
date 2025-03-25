@@ -4,7 +4,7 @@ using MyRestoranApi.Data;
 using System.Linq;
 
 [ApiController]
-[Route("api/[controller]")] // Изменили путь на '/api/controller'
+[Route("api/[controller]")]
 public class CustomerController : ControllerBase
 {
     private readonly AppDbContext _context;
@@ -14,40 +14,29 @@ public class CustomerController : ControllerBase
         _context = context;
     }
 
-    // GET api/controller?phone=+79995556677
-    // GET api/controller
+    // GET api/customers
     [HttpGet]
-    public async Task<IActionResult> GetCustomers([FromQuery] string phone)
+    public async Task<IActionResult> GetCustomers([FromQuery] string? phone)
     {
         try
         {
+            IQueryable<Customer> query = _context.Customers;
+
+            // Если передан телефон в запросе, фильтруем по номеру телефона
             if (!string.IsNullOrEmpty(phone))
             {
-                // Если передан телефон в запросе, фильтруем по номеру телефона
+                // Убираем все нецифровые символы, но сохраняем префикс +
                 var formattedPhone = new string(phone.Where(char.IsDigit).ToArray());
-                var customers = await _context.Customers
-                    .Where(c => c.Phone.Contains(formattedPhone))
-                    .ToListAsync();
 
-                if (customers.Count == 0)
-                {
-                    return NotFound("No customers found with this phone number.");
-                }
+                // Логируем, что получилось после форматирования
+                Console.WriteLine($"Formatted phone: {formattedPhone}");
 
-                return Ok(customers); // Возвращаем список клиентов
+                // Фильтруем по номеру телефона
+                query = query.Where(c => c.Phone.Contains(formattedPhone));
             }
-            else
-            {
-                // Если телефон не передан, возвращаем всех клиентов
-                var customers = await _context.Customers.ToListAsync();
 
-                if (customers.Count == 0)
-                {
-                    return NotFound("No customers found.");
-                }
-
-                return Ok(customers); // Возвращаем всех клиентов
-            }
+            var customers = await query.ToListAsync();
+            return Ok(customers);
         }
         catch (Exception ex)
         {
@@ -55,7 +44,7 @@ public class CustomerController : ControllerBase
         }
     }
 
-    // POST api/controller
+    // POST api/customers
     [HttpPost]
     public async Task<IActionResult> CreateCustomer([FromBody] Customer customer)
     {
@@ -71,27 +60,26 @@ public class CustomerController : ControllerBase
         }
     }
 
-    // GET api/controller/exists?phone=+79995556677
     [HttpGet("exists")]
-    public async Task<IActionResult> PhoneExists([FromQuery] string phone)
+    public async Task<IActionResult> PhoneExists(string phone)
     {
         try
         {
-            if (string.IsNullOrEmpty(phone))
-            {
-                return BadRequest("Phone number is required.");
-            }
-
+            // Убираем все нецифровые символы, но сохраняем префикс +
             var formattedPhone = new string(phone.Where(char.IsDigit).ToArray());
+
+            // Логируем, что получилось после форматирования
+            Console.WriteLine($"Formatted phone: {formattedPhone}");
+
             var customer = await _context.Customers
                 .FirstOrDefaultAsync(c => c.Phone.Contains(formattedPhone));
 
             if (customer != null)
             {
-                return Ok(true); // Клиент найден
+                return Ok(true); // Найден
             }
 
-            return Ok(false); // Клиент не найден
+            return Ok(false); // Не найден
         }
         catch (Exception ex)
         {
