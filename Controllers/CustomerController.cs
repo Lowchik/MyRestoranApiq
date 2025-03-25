@@ -14,29 +14,35 @@ public class CustomerController : ControllerBase
         _context = context;
     }
 
-    // GET api/customers
+    // GET api/customers?phone=+79995556677
     [HttpGet]
-    public async Task<IActionResult> GetCustomers([FromQuery] string? phone)
+    public async Task<IActionResult> GetCustomers([FromQuery] string phone)
     {
         try
         {
-            IQueryable<Customer> query = _context.Customers;
-
             // Если передан телефон в запросе, фильтруем по номеру телефона
-            if (!string.IsNullOrEmpty(phone))
+            if (string.IsNullOrEmpty(phone))
             {
-                // Убираем все нецифровые символы, но сохраняем префикс +
-                var formattedPhone = new string(phone.Where(char.IsDigit).ToArray());
-
-                // Логируем, что получилось после форматирования
-                Console.WriteLine($"Formatted phone: {formattedPhone}");
-
-                // Используем Contains для поиска по номеру телефона (не только точное совпадение)
-                query = query.Where(c => c.Phone.Contains(formattedPhone));
+                return BadRequest("Phone number is required.");
             }
 
-            var customers = await query.ToListAsync();
-            return Ok(customers);
+            // Убираем все нецифровые символы, но сохраняем префикс "+"
+            var formattedPhone = new string(phone.Where(char.IsDigit).ToArray());
+
+            // Логируем, что получилось после форматирования
+            Console.WriteLine($"Formatted phone: {formattedPhone}");
+
+            // Фильтруем клиентов по номеру телефона
+            var customers = await _context.Customers
+                .Where(c => c.Phone.Contains(formattedPhone))
+                .ToListAsync();
+
+            if (customers.Count == 0)
+            {
+                return NotFound("No customers found with this phone number.");
+            }
+
+            return Ok(customers); // Возвращаем список клиентов
         }
         catch (Exception ex)
         {
@@ -60,28 +66,33 @@ public class CustomerController : ControllerBase
         }
     }
 
-    // GET api/customers/exists
+    // GET api/customers/exists?phone=+79995556677
     [HttpGet("exists")]
     public async Task<IActionResult> PhoneExists([FromQuery] string phone)
     {
         try
         {
-            // Убираем все нецифровые символы, но сохраняем префикс +
+            if (string.IsNullOrEmpty(phone))
+            {
+                return BadRequest("Phone number is required.");
+            }
+
+            // Убираем все нецифровые символы, но сохраняем префикс "+"
             var formattedPhone = new string(phone.Where(char.IsDigit).ToArray());
 
             // Логируем, что получилось после форматирования
             Console.WriteLine($"Formatted phone: {formattedPhone}");
 
-            // Используем Equals для точного совпадения
+            // Ищем клиента с данным номером телефона
             var customer = await _context.Customers
                 .FirstOrDefaultAsync(c => c.Phone.Contains(formattedPhone));
 
             if (customer != null)
             {
-                return Ok(true); // Найден
+                return Ok(true); // Клиент найден
             }
 
-            return Ok(false); // Не найден
+            return Ok(false); // Клиент не найден
         }
         catch (Exception ex)
         {
