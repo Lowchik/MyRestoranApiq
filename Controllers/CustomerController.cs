@@ -25,14 +25,14 @@ public class CustomerController : ControllerBase
             // Если передан телефон в запросе, фильтруем по номеру телефона
             if (!string.IsNullOrEmpty(phone))
             {
-                // Убираем все нецифровые символы, но сохраняем префикс +
-                var formattedPhone = new string(phone.Where(char.IsDigit).ToArray());
+                // Форматируем номер телефона
+                var formattedPhone = FormatPhoneNumber(phone);
 
                 // Логируем, что получилось после форматирования
                 Console.WriteLine($"Formatted phone: {formattedPhone}");
 
-                // Фильтруем по номеру телефона
-                query = query.Where(c => c.Phone.Contains(formattedPhone));
+                // Фильтруем по номеру телефона с использованием LIKE в SQL
+                query = query.Where(c => EF.Functions.Like(c.Phone, $"%{formattedPhone}%"));
             }
 
             var customers = await query.ToListAsync();
@@ -60,19 +60,20 @@ public class CustomerController : ControllerBase
         }
     }
 
+    // GET api/customers/exists
     [HttpGet("exists")]
     public async Task<IActionResult> PhoneExists(string phone)
     {
         try
         {
-            // Убираем все нецифровые символы, но сохраняем префикс +
-            var formattedPhone = new string(phone.Where(char.IsDigit).ToArray());
+            // Форматируем номер телефона
+            var formattedPhone = FormatPhoneNumber(phone);
 
             // Логируем, что получилось после форматирования
             Console.WriteLine($"Formatted phone: {formattedPhone}");
 
             var customer = await _context.Customers
-                .FirstOrDefaultAsync(c => c.Phone.Contains(formattedPhone));
+                .FirstOrDefaultAsync(c => EF.Functions.Like(c.Phone, $"%{formattedPhone}%"));
 
             if (customer != null)
             {
@@ -85,5 +86,13 @@ public class CustomerController : ControllerBase
         {
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
+    }
+
+    // Метод для корректного форматирования номера телефона
+    private string FormatPhoneNumber(string phone)
+    {
+        // Убираем все нецифровые символы, но сохраняем префикс +
+        var formattedPhone = new string(phone.Where(c => char.IsDigit(c) || c == '+').ToArray());
+        return formattedPhone;
     }
 }
