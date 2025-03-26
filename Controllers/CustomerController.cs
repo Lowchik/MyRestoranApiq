@@ -14,23 +14,6 @@ public class CustomerController : ControllerBase
         _context = context;
     }
 
-    // Метод для форматирования телефона
-    private string FormatPhone(string phone)
-    {
-        // Логирование перед форматированием
-        Console.WriteLine($"Original phone: {phone}");
-
-        // Оставляем только цифры, но сохраняем префикс +
-        var digits = new string(phone.Where(char.IsDigit).ToArray());
-        var formattedPhone = phone.StartsWith("+") ? "+" + digits : digits;
-
-        // Логирование после форматирования
-        Console.WriteLine($"Formatted phone: {formattedPhone}");
-        return formattedPhone;
-    }
-
-
-
     // GET api/customers
     [HttpGet]
     public async Task<IActionResult> GetCustomers([FromQuery] string? phone)
@@ -42,13 +25,14 @@ public class CustomerController : ControllerBase
             // Если передан телефон в запросе, фильтруем по номеру телефона
             if (!string.IsNullOrEmpty(phone))
             {
-                var formattedPhone = FormatPhone(phone); // Используем общий метод для форматирования
+                // Убираем все нецифровые символы, но сохраняем префикс +
+                var formattedPhone = new string(phone.Where(char.IsDigit).ToArray());
 
                 // Логируем, что получилось после форматирования
                 Console.WriteLine($"Formatted phone: {formattedPhone}");
 
-                // Фильтруем по номеру телефона с точным совпадением
-                query = query.Where(c => c.Phone == formattedPhone); // Используем == вместо Contains
+                // Фильтруем по номеру телефона
+                query = query.Where(c => c.Phone.Contains(formattedPhone));
             }
 
             var customers = await query.ToListAsync();
@@ -76,20 +60,19 @@ public class CustomerController : ControllerBase
         }
     }
 
-    // GET api/customers/exists?phone=
     [HttpGet("exists")]
-    public async Task<IActionResult> PhoneExists([FromQuery] string phone) // Добавляем [FromQuery]
+    public async Task<IActionResult> PhoneExists(string phone)
     {
         try
         {
-            var formattedPhone = FormatPhone(phone); // Используем общий метод для форматирования
+            // Убираем все нецифровые символы, но сохраняем префикс +
+            var formattedPhone = new string(phone.Where(char.IsDigit).ToArray());
 
             // Логируем, что получилось после форматирования
             Console.WriteLine($"Formatted phone: {formattedPhone}");
 
-            // Ищем пользователя с точным совпадением по телефону
             var customer = await _context.Customers
-                .FirstOrDefaultAsync(c => c.Phone == formattedPhone); // Используем == вместо Contains
+                .FirstOrDefaultAsync(c => c.Phone.Contains(formattedPhone));
 
             if (customer != null)
             {
@@ -103,5 +86,4 @@ public class CustomerController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
-
 }
