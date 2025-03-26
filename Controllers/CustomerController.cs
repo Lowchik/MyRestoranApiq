@@ -78,7 +78,7 @@ public class CustomerController : ControllerBase
 
     // GET api/customers/exists?phone=
     [HttpGet("exists")]
-    public async Task<IActionResult> PhoneExists(string phone)
+    public async Task<IActionResult> PhoneExists([FromQuery] string phone) // Добавляем [FromQuery]
     {
         try
         {
@@ -103,4 +103,5 @@ public class CustomerController : ControllerBase
             return StatusCode(500, $"Internal server error: {ex.Message}");
         }
     }
+
 }
