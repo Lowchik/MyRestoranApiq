@@ -14,6 +14,13 @@ public class CustomerController : ControllerBase
         _context = context;
     }
 
+    // Метод для форматирования телефона
+    private string FormatPhone(string phone)
+    {
+        // Убираем все нецифровые символы, но сохраняем префикс +
+        return new string(phone.Where(char.IsDigit).ToArray());
+    }
+
     // GET api/customers
     [HttpGet]
     public async Task<IActionResult> GetCustomers([FromQuery] string? phone)
@@ -25,8 +32,7 @@ public class CustomerController : ControllerBase
             // Если передан телефон в запросе, фильтруем по номеру телефона
             if (!string.IsNullOrEmpty(phone))
             {
-                // Убираем все нецифровые символы, но сохраняем префикс +
-                var formattedPhone = new string(phone.Where(char.IsDigit).ToArray());
+                var formattedPhone = FormatPhone(phone); // Используем общий метод для форматирования
 
                 // Логируем, что получилось после форматирования
                 Console.WriteLine($"Formatted phone: {formattedPhone}");
@@ -60,13 +66,13 @@ public class CustomerController : ControllerBase
         }
     }
 
+    // GET api/customers/exists?phone=<phone>
     [HttpGet("exists")]
     public async Task<IActionResult> PhoneExists(string phone)
     {
         try
         {
-            // Убираем все нецифровые символы, но сохраняем префикс +
-            var formattedPhone = new string(phone.Where(char.IsDigit).ToArray());
+            var formattedPhone = FormatPhone(phone); // Используем общий метод для форматирования
 
             // Логируем, что получилось после форматирования
             Console.WriteLine($"Formatted phone: {formattedPhone}");
