@@ -17,9 +17,19 @@ public class CustomerController : ControllerBase
     // Метод для форматирования телефона
     private string FormatPhone(string phone)
     {
-        // Убираем все нецифровые символы, но сохраняем префикс +
-        return new string(phone.Where(char.IsDigit).ToArray());
+        // Логирование перед форматированием
+        Console.WriteLine($"Original phone: {phone}");
+
+        // Оставляем только цифры, но сохраняем префикс +
+        var digits = new string(phone.Where(char.IsDigit).ToArray());
+        var formattedPhone = phone.StartsWith("+") ? "+" + digits : digits;
+
+        // Логирование после форматирования
+        Console.WriteLine($"Formatted phone: {formattedPhone}");
+        return formattedPhone;
     }
+
+
 
     // GET api/customers
     [HttpGet]
@@ -66,7 +76,7 @@ public class CustomerController : ControllerBase
         }
     }
 
-    // GET api/customers/exists?phone=<phone>
+    // GET api/customers/exists?phone=
     [HttpGet("exists")]
     public async Task<IActionResult> PhoneExists(string phone)
     {
