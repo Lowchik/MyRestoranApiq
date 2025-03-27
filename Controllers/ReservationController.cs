@@ -1,29 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using MyRestoranApi.Data;
-using System;
-using System.Threading.Tasks;
+
 
 [ApiController]
 [Route("api/[controller]")]
 public class ReservationController : ControllerBase
 {
     private readonly AppDbContext _context;
-    private readonly ILogger<ReservationController> _logger;
     private const int DefaultEmployeeId = 1; // Всегда назначаем ID сотрудника = 1
 
-    public ReservationController(AppDbContext context, ILogger<ReservationController> logger)
+    public ReservationController(AppDbContext context)
     {
         _context = context;
-        _logger = logger;
     }
 
     // Создание бронирования
     [HttpPost]
     public async Task<IActionResult> CreateReservation([FromBody] Reservation request)
     {
-        _logger.LogInformation($"Запрос на бронирование: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime}");
+        Console.WriteLine($"Запрос на бронирование: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime}");
 
         try
         {
@@ -31,7 +27,7 @@ public class ReservationController : ControllerBase
             var table = await _context.Tables.FindAsync(request.TableId);
             if (table == null)
             {
-                _logger.LogWarning("Стол не найден.");
+                Console.WriteLine("Стол не найден.");
                 return NotFound("Стол не найден.");
             }
 
@@ -41,7 +37,7 @@ public class ReservationController : ControllerBase
 
             if (overlappingReservation)
             {
-                _logger.LogWarning("Этот стол уже забронирован на это время.");
+                Console.WriteLine("Этот стол уже забронирован на это время.");
                 return BadRequest("Этот стол уже забронирован на это время.");
             }
 
@@ -59,7 +55,7 @@ public class ReservationController : ControllerBase
             _context.Reservations.Add(reservation);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation($"Бронирование успешно создано для клиента {request.CustomerId}, стол {request.TableId}.");
+            Console.WriteLine($"Бронирование успешно создано для клиента {request.CustomerId}, стол {request.TableId}.");
 
             return Ok(new
             {
@@ -70,7 +66,7 @@ public class ReservationController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Ошибка сервера: {ex.Message}");
+            Console.WriteLine($"Ошибка сервера: {ex.Message}");
             return StatusCode(500, $"Ошибка сервера: {ex.Message}");
         }
     }
@@ -90,7 +86,7 @@ public class ReservationController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Ошибка при получении бронирований: {ex.Message}");
+            Console.WriteLine($"Ошибка при получении бронирований: {ex.Message}");
             return StatusCode(500, $"Ошибка сервера: {ex.Message}");
         }
     }
@@ -106,7 +102,7 @@ public class ReservationController : ControllerBase
         }
         catch (Exception ex)
         {
-            _logger.LogError($"Ошибка при получении столов: {ex.Message}");
+            Console.WriteLine($"Ошибка при получении столов: {ex.Message}");
             return StatusCode(500, $"Ошибка сервера: {ex.Message}");
         }
     }
