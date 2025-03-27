@@ -17,10 +17,5 @@ namespace MyRestoranApi.Data
         [Column("seats")]
         [Required]
         public int Seats { get; set; } // Количество мест
-
-        [Column("status")]
-        [Required]
-        [MaxLength(50)]
-        public string Status { get; set; } = "available"; // Статус стола (по умолчанию "available")
     }
 }

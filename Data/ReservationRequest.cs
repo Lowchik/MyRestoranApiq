@@ -13,12 +13,12 @@ namespace MyRestoranApi.Data
 
         [Column("customer_id")]
         [Required]
-        [ForeignKey("Customer")] // Добавляем ForeignKey
+        [ForeignKey("Customer")] // Связь с таблицей customers
         public int CustomerId { get; set; }
 
         [Column("table_id")]
         [Required]
-        [ForeignKey("Table")] // Добавляем ForeignKey
+        [ForeignKey("Table")] // Связь с таблицей tables
         public int TableId { get; set; }
 
         [Column("reservation_time")]
@@ -26,11 +26,24 @@ namespace MyRestoranApi.Data
         public DateTime ReservationTime { get; set; }
 
         [Column("employee_id")]
-        [Required]
-        public int EmployeeId { get; set; } = 1; // Всегда 1
+        public int? EmployeeId { get; set; } // Теперь может быть NULL
 
         [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+        [Column("status")]
+        [Required]
+        [MaxLength(50)]
+        public ReservationStatus Status { get; set; } = ReservationStatus.Available; // Статус брони
+
+        // Перечисление статусов бронирования
+        public enum ReservationStatus
+        {
+            Available,  // Доступно (по умолчанию)
+            Reserved,   // Забронировано
+            Completed,  // Завершено
+            Cancelled   // Отменено
+        }
 
         // Навигационные свойства
         public Customer Customer { get; set; }

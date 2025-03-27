@@ -32,12 +32,6 @@ public class ReservationController : ControllerBase
                 return NotFound("Стол не найден.");
             }
 
-            // Проверяем, свободен ли стол
-            if (table.Status != "available")
-            {
-                return BadRequest("Этот стол уже забронирован.");
-            }
-
             // Проверяем, нет ли пересечений бронирования на это время
             var overlappingReservation = await _context.Reservations
                 .AnyAsync(r => r.TableId == request.TableId && r.ReservationTime == request.ReservationTime);
@@ -54,15 +48,11 @@ public class ReservationController : ControllerBase
                 TableId = request.TableId,
                 ReservationTime = request.ReservationTime,
                 EmployeeId = DefaultEmployeeId, // Всегда ID = 1
-                CreatedAt = DateTime.UtcNow
+                CreatedAt = DateTime.UtcNow,
+                Status = Reservation.ReservationStatus.Reserved // Устанавливаем статус "Reserved"
             };
 
             _context.Reservations.Add(reservation);
-
-            // Меняем статус стола на "reserved"
-            table.Status = "reserved";
-            _context.Tables.Update(table);
-
             await _context.SaveChangesAsync();
 
             return Ok(new
@@ -90,11 +80,41 @@ public class ReservationController : ControllerBase
         return Ok(reservations);
     }
 
+    // ? Получить бронирование по ID
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetReservationById(int id)
+    {
+        var reservation = await _context.Reservations
+            .Include(r => r.Customer)
+            .Include(r => r.Table)
+            .FirstOrDefaultAsync(r => r.Id == id);
+
+        if (reservation == null)
+        {
+            return NotFound("Бронирование не найдено.");
+        }
+
+        return Ok(reservation);
+    }
+
     // ? Получить список всех столов
     [HttpGet("tables")]
     public async Task<IActionResult> GetTables()
     {
         var tables = await _context.Tables.ToListAsync();
         return Ok(tables);
+    }
+
+    // ? Получить стол по ID
+    [HttpGet("tables/{id}")]
+    public async Task<IActionResult> GetTableById(int id)
+    {
+        var table = await _context.Tables.FindAsync(id);
+        if (table == null)
+        {
+            return NotFound("Стол не найден.");
+        }
+
+        return Ok(table);
     }
 }
