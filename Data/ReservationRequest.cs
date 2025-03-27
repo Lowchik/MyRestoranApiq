@@ -44,8 +44,5 @@ namespace MyRestoranApi.Data
         }
 
 
-        // Навигационные свойства
-        public Customer Customer { get; set; }
-        public Table Table { get; set; }
     }
 }
