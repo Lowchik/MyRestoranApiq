@@ -43,6 +43,7 @@ namespace MyRestoranApi.Data
             Cancelled   // Отменено
         }
 
-
+        public Customer Customer { get; set; }
+        public Table Table { get; set; }
     }
 }
