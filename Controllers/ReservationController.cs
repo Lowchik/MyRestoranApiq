@@ -19,7 +19,7 @@ public class ReservationController : ControllerBase
     [HttpPost("reservation")]
     public async Task<IActionResult> CreateReservation([FromBody] Reservation request)
     {
-        Console.WriteLine($"Запрос на бронирование: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime}");
+        Console.WriteLine($"zapros na bronirovanie: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime}");
 
         try
         {
@@ -27,24 +27,24 @@ public class ReservationController : ControllerBase
             var customerExists = await _context.Customers.AnyAsync(c => c.Id == request.CustomerId);
             if (!customerExists)
             {
-                Console.WriteLine("Клиент не найден.");
-                return NotFound("Клиент не найден.");
+                Console.WriteLine("Client ne nayden.");
+                return NotFound("Client ne nayden.");
             }
 
             // Проверяем, существует ли стол
             var table = await _context.Tables.FindAsync(request.TableId);
             if (table == null)
             {
-                Console.WriteLine("Стол не найден.");
-                return NotFound("Стол не найден.");
+                Console.WriteLine("Stol ne nayden.");
+                return NotFound("Stol ne nayden.");
             }
 
             // Проверка на существование сотрудника
             var employeeExists = await _context.Employee.AnyAsync(e => e.Id == DefaultEmployeeId);
             if (!employeeExists)
             {
-                Console.WriteLine("Сотрудник не найден.");
-                return NotFound("Сотрудник не найден.");
+                Console.WriteLine("Staff ne nayden.");
+                return NotFound("Staff ne nayden.");
             }
 
             // Проверяем, нет ли пересечений бронирования на это время
@@ -53,8 +53,8 @@ public class ReservationController : ControllerBase
 
             if (overlappingReservation)
             {
-                Console.WriteLine("Этот стол уже забронирован на это время.");
-                return BadRequest("Этот стол уже забронирован на это время.");
+                Console.WriteLine("Ston yje sabronirovan na eto time.");
+                return BadRequest("Ston yje sabronirovan na eto time.");
             }
 
             // Создаем бронирование
@@ -71,19 +71,19 @@ public class ReservationController : ControllerBase
             _context.Reservations.Add(reservation);
             await _context.SaveChangesAsync();
 
-            Console.WriteLine($"Бронирование успешно создано для клиента {request.CustomerId}, стол {request.TableId}.");
+            Console.WriteLine($"Bronirovanie cosdano {request.CustomerId}, стол {request.TableId}.");
 
             return Ok(new
             {
-                message = "Стол успешно забронирован!",
+                message = "Stol yspex!",
                 reservationId = reservation.Id,
                 employeeId = DefaultEmployeeId
             });
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Ошибка сервера: {ex.Message}");
-            return StatusCode(500, $"Ошибка сервера: {ex.Message}");
+            Console.WriteLine($"error server: {ex.Message}");
+            return StatusCode(500, $"error server: {ex.Message}");
         }
     }
 
