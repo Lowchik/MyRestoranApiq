@@ -18,12 +18,12 @@ public class CustomerController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetCustomerByPhone([FromQuery] string? phone)
     {
-         Console.WriteLine($"[GetCustomerByPhone]Прилетело в метод с: {phone}");
+         Console.WriteLine($"[GetCustomerByPhone]priletel v metod c: {phone}");
 
 
         if (string.IsNullOrEmpty(phone))
         {
-            return BadRequest("[GetCustomerByPhone]Номер телефона обязателен.");
+            return BadRequest("[GetCustomerByPhone]Nomer telephona obyazatelen.");
         }
 
         try
@@ -38,11 +38,11 @@ public class CustomerController : ControllerBase
 
             if (customer == null)
             {
-                Console.WriteLine("[GetCustomerByPhone]Клиент не найден.");
-                return NotFound("[GetCustomerByPhone]Клиент не найден.");
+                Console.WriteLine("[GetCustomerByPhone]Client ne nayden.");
+                return NotFound("[GetCustomerByPhone]Client ne nayden.");
             }
 
-            Console.WriteLine($"[GetCustomerByPhone]Возвращаем клиента: {customer.FirstName} {customer.LastName}");
+            Console.WriteLine($"[GetCustomerByPhone]Vozvrashaem clienta: {customer.FirstName} {customer.LastName}");
             return Ok(customer);
         }
         catch (Exception ex)
