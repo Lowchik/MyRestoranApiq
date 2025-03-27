@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MyRestoranApi.Data;
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 
 [ApiController]
@@ -10,18 +10,20 @@ using System.Threading.Tasks;
 public class ReservationController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly ILogger<ReservationController> _logger;
     private const int DefaultEmployeeId = 1; // Всегда назначаем ID сотрудника = 1
 
-    public ReservationController(AppDbContext context)
+    public ReservationController(AppDbContext context, ILogger<ReservationController> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
-    // ? Создание бронирования
+    // Создание бронирования
     [HttpPost]
     public async Task<IActionResult> CreateReservation([FromBody] Reservation request)
     {
-        Console.WriteLine($"Запрос на бронирование: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime}");
+        _logger.LogInformation($"Запрос на бронирование: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime}");
 
         try
         {
@@ -29,6 +31,7 @@ public class ReservationController : ControllerBase
             var table = await _context.Tables.FindAsync(request.TableId);
             if (table == null)
             {
+                _logger.LogWarning("Стол не найден.");
                 return NotFound("Стол не найден.");
             }
 
@@ -38,6 +41,7 @@ public class ReservationController : ControllerBase
 
             if (overlappingReservation)
             {
+                _logger.LogWarning("Этот стол уже забронирован на это время.");
                 return BadRequest("Этот стол уже забронирован на это время.");
             }
 
@@ -55,6 +59,8 @@ public class ReservationController : ControllerBase
             _context.Reservations.Add(reservation);
             await _context.SaveChangesAsync();
 
+            _logger.LogInformation($"Бронирование успешно создано для клиента {request.CustomerId}, стол {request.TableId}.");
+
             return Ok(new
             {
                 message = "Стол успешно забронирован!",
@@ -64,57 +70,44 @@ public class ReservationController : ControllerBase
         }
         catch (Exception ex)
         {
+            _logger.LogError($"Ошибка сервера: {ex.Message}");
             return StatusCode(500, $"Ошибка сервера: {ex.Message}");
         }
     }
 
-    // ? Получить список всех бронирований
+    // Получить список всех бронирований
     [HttpGet]
     public async Task<IActionResult> GetReservations()
     {
-        var reservations = await _context.Reservations
-            .Include(r => r.Customer)
-            .Include(r => r.Table)
-            .ToListAsync();
-
-        return Ok(reservations);
-    }
-
-    // ? Получить бронирование по ID
-    [HttpGet("{id}")]
-    public async Task<IActionResult> GetReservationById(int id)
-    {
-        var reservation = await _context.Reservations
-            .Include(r => r.Customer)
-            .Include(r => r.Table)
-            .FirstOrDefaultAsync(r => r.Id == id);
-
-        if (reservation == null)
+        try
         {
-            return NotFound("Бронирование не найдено.");
-        }
+            var reservations = await _context.Reservations
+                .Include(r => r.Customer)
+                .Include(r => r.Table)
+                .ToListAsync();
 
-        return Ok(reservation);
+            return Ok(reservations);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Ошибка при получении бронирований: {ex.Message}");
+            return StatusCode(500, $"Ошибка сервера: {ex.Message}");
+        }
     }
 
-    // ? Получить список всех столов
+    // Получить список всех столов
     [HttpGet("tables")]
     public async Task<IActionResult> GetTables()
     {
-        var tables = await _context.Tables.ToListAsync();
-        return Ok(tables);
-    }
-
-    // ? Получить стол по ID
-    [HttpGet("tables/{id}")]
-    public async Task<IActionResult> GetTableById(int id)
-    {
-        var table = await _context.Tables.FindAsync(id);
-        if (table == null)
+        try
         {
-            return NotFound("Стол не найден.");
+            var tables = await _context.Tables.ToListAsync();
+            return Ok(tables);
         }
-
-        return Ok(table);
+        catch (Exception ex)
+        {
+            _logger.LogError($"Ошибка при получении столов: {ex.Message}");
+            return StatusCode(500, $"Ошибка сервера: {ex.Message}");
+        }
     }
 }
