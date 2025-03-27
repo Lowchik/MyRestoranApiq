@@ -12,6 +12,7 @@ public class ReservationController : ControllerBase
     public ReservationController(AppDbContext context)
     {
         _context = context;
+        Console.WriteLine("Создан контролер");
     }
 
     // Создание бронирования
