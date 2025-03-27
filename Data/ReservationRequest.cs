@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace MyRestoranApi.Data
 {
     [Table("reservations")]
-    public class ReservationRequest
+    public class Reservation
     {
         [Key]
         [Column("id")]

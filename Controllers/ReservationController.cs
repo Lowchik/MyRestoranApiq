@@ -19,26 +19,26 @@ public class ReservationController : ControllerBase
 
     // ? Создание бронирования
     [HttpPost]
-    public async Task<IActionResult> CreateReservation([FromBody] ReservationRequest request)
+    public async Task<IActionResult> CreateReservation([FromBody] Reservation request)
     {
         Console.WriteLine($"Запрос на бронирование: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime}");
 
         try
         {
-            // 1?? Проверяем, существует ли стол
+            // Проверяем, существует ли стол
             var table = await _context.Tables.FindAsync(request.TableId);
             if (table == null)
             {
                 return NotFound("Стол не найден.");
             }
 
-            // 2?? Проверяем, свободен ли стол
+            // Проверяем, свободен ли стол
             if (table.Status != "available")
             {
                 return BadRequest("Этот стол уже забронирован.");
             }
 
-            // 3?? Проверяем, нет ли пересечений бронирования на это время
+            // Проверяем, нет ли пересечений бронирования на это время
             var overlappingReservation = await _context.Reservations
                 .AnyAsync(r => r.TableId == request.TableId && r.ReservationTime == request.ReservationTime);
 
@@ -47,8 +47,8 @@ public class ReservationController : ControllerBase
                 return BadRequest("Этот стол уже забронирован на это время.");
             }
 
-            // 4?? Создаем бронирование со всеми данными
-            var reservation = new ReservationRequest
+            // Создаем бронирование
+            var reservation = new Reservation
             {
                 CustomerId = request.CustomerId,
                 TableId = request.TableId,
@@ -59,7 +59,7 @@ public class ReservationController : ControllerBase
 
             _context.Reservations.Add(reservation);
 
-            // 5?? Меняем статус стола на "reserved"
+            // Меняем статус стола на "reserved"
             table.Status = "reserved";
             _context.Tables.Update(table);
 
@@ -79,7 +79,7 @@ public class ReservationController : ControllerBase
     }
 
     // ? Получить список всех бронирований
-    [HttpGet]
+    [HttpGet("reservations")]
     public async Task<IActionResult> GetReservations()
     {
         var reservations = await _context.Reservations
@@ -88,5 +88,13 @@ public class ReservationController : ControllerBase
             .ToListAsync();
 
         return Ok(reservations);
+    }
+
+    // ? Получить список всех столов
+    [HttpGet("tables")]
+    public async Task<IActionResult> GetTables()
+    {
+        var tables = await _context.Tables.ToListAsync();
+        return Ok(tables);
     }
 }
