@@ -34,8 +34,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Включение редиректа на HTTPS
-app.UseHttpsRedirection();
 
 // Включение CORS
 app.UseCors("AllowAllOrigins");  // Это важно для разрешения CORS
