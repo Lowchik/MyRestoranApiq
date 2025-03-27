@@ -79,8 +79,8 @@ public class ReservationController : ControllerBase
     }
 
     // ? Получить список всех бронирований
-    [HttpPost]
-    public async Task<IActionResult> GetReservations([FromBody] Reservation reservation)
+    [HttpGet]
+    public async Task<IActionResult> GetReservations()
     {
         var reservations = await _context.Reservations
             .Include(r => r.Customer)
@@ -91,7 +91,7 @@ public class ReservationController : ControllerBase
     }
 
     // ? Получить список всех столов
-    [HttpPost]
+    [HttpGet("tables")]
     public async Task<IActionResult> GetTables()
     {
         var tables = await _context.Tables.ToListAsync();
