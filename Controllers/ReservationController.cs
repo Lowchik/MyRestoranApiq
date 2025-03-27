@@ -65,7 +65,8 @@ public class ReservationController : ControllerBase
                 ReservationTime = request.ReservationTime,
                 EmployeeId = DefaultEmployeeId, // Всегда ID = 1
                 CreatedAt = DateTime.UtcNow,
-                Status = Reservation.ReservationStatus.Reserved // Устанавливаем статус "Reserved"
+                Status = Reservation.ReservationStatus.Reserved.ToString()
+
             };
 
             _context.Reservations.Add(reservation);

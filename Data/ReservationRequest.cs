@@ -34,9 +34,7 @@ namespace MyRestoranApi.Data
         [Column("status")]
         [Required]
         [MaxLength(50)]
-        public ReservationStatus Status { get; set; } = ReservationStatus.Available; // Статус брони
-
-        // Перечисление статусов бронирования
+        public string Status { get; set; } = ReservationStatus.Available.ToString();
         public enum ReservationStatus
         {
             Available,  // Доступно (по умолчанию)
@@ -44,6 +42,7 @@ namespace MyRestoranApi.Data
             Completed,  // Завершено
             Cancelled   // Отменено
         }
+
 
         // Навигационные свойства
         public Customer Customer { get; set; }
