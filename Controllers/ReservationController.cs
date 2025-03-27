@@ -15,7 +15,7 @@ public class ReservationController : ControllerBase
     }
 
     // Создание бронирования
-    [HttpPost]
+    [HttpPost("reservation")]
     public async Task<IActionResult> CreateReservation([FromBody] Reservation request)
     {
         Console.WriteLine($"Запрос на бронирование: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime}");
