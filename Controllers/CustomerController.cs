@@ -14,29 +14,36 @@ public class CustomerController : ControllerBase
         _context = context;
     }
 
-    // GET api/customers
+    // GET api/customers?phone=+79001234567
     [HttpGet]
-    public async Task<IActionResult> GetCustomers([FromQuery] string? phone)
+    public async Task<IActionResult> GetCustomerByPhone([FromQuery] string? phone)
     {
+         Console.WriteLine($"[GetCustomerByPhone]Прилетело в метод с: {phone}");
+
+
+        if (string.IsNullOrEmpty(phone))
+        {
+            return BadRequest("[GetCustomerByPhone]Номер телефона обязателен.");
+        }
+
         try
         {
-            IQueryable<Customer> query = _context.Customers;
+            // Форматируем номер телефона
+            var formattedPhone = FormatPhoneNumber(phone);
+            Console.WriteLine($"[GetCustomerByPhone]Formatted phone: {formattedPhone}");
 
-            // Если передан телефон в запросе, фильтруем по номеру телефона
-            if (!string.IsNullOrEmpty(phone))
+            // Ищем одного клиента
+            var customer = await _context.Customers
+                .FirstOrDefaultAsync(c => EF.Functions.Like(c.Phone, $"%{formattedPhone}%"));
+
+            if (customer == null)
             {
-                // Форматируем номер телефона
-                var formattedPhone = FormatPhoneNumber(phone);
-
-                // Логируем, что получилось после форматирования
-                Console.WriteLine($"Formatted phone: {formattedPhone}");
-
-                // Фильтруем по номеру телефона с использованием LIKE в SQL
-                query = query.Where(c => EF.Functions.Like(c.Phone, $"%{formattedPhone}%"));
+                Console.WriteLine("[GetCustomerByPhone]Клиент не найден.");
+                return NotFound("[GetCustomerByPhone]Клиент не найден.");
             }
 
-            var customers = await query.ToListAsync();
-            return Ok(customers);
+            Console.WriteLine($"[GetCustomerByPhone]Возвращаем клиента: {customer.FirstName} {customer.LastName}");
+            return Ok(customer);
         }
         catch (Exception ex)
         {
@@ -52,7 +59,7 @@ public class CustomerController : ControllerBase
         {
             _context.Customers.Add(customer);
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetCustomers), new { id = customer.Id }, customer);
+            return CreatedAtAction(nameof(GetCustomerByPhone), new { id = customer.Id }, customer);
         }
         catch (Exception ex)
         {
