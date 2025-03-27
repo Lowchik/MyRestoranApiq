@@ -13,10 +13,12 @@ namespace MyRestoranApi.Data
 
         [Column("customer_id")]
         [Required]
+        [ForeignKey("Customer")] // Добавляем ForeignKey
         public int CustomerId { get; set; }
 
         [Column("table_id")]
         [Required]
+        [ForeignKey("Table")] // Добавляем ForeignKey
         public int TableId { get; set; }
 
         [Column("reservation_time")]
@@ -30,11 +32,8 @@ namespace MyRestoranApi.Data
         [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-
-        
+        // Навигационные свойства
         public Customer Customer { get; set; }
-
-       
         public Table Table { get; set; }
     }
 }
