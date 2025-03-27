@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MyRestoranApi.Data;
 
 [ApiController]
-[Route("reserv")]
+[Route("api/[controller]")]
 public class ReservationController : ControllerBase
 {
     private readonly AppDbContext _context;
