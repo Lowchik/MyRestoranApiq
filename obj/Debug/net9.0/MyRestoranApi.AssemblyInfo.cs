@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MyRestoranApi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+90ac2461af20c6d07bc94bc82163e98ed569c004")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+6b5804a807d2386cc0f7b7aaf8b7c6c8f316db27")]
 [assembly: System.Reflection.AssemblyProductAttribute("MyRestoranApi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MyRestoranApi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

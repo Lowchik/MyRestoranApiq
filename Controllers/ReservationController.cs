@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyRestoranApi.Data;
 
-
 [ApiController]
 [Route("api/[controller]")]
 public class ReservationController : ControllerBase
@@ -23,12 +22,28 @@ public class ReservationController : ControllerBase
 
         try
         {
+            // Проверка на существование клиента
+            var customerExists = await _context.Customers.AnyAsync(c => c.Id == request.CustomerId);
+            if (!customerExists)
+            {
+                Console.WriteLine("Клиент не найден.");
+                return NotFound("Клиент не найден.");
+            }
+
             // Проверяем, существует ли стол
             var table = await _context.Tables.FindAsync(request.TableId);
             if (table == null)
             {
                 Console.WriteLine("Стол не найден.");
                 return NotFound("Стол не найден.");
+            }
+
+            // Проверка на существование сотрудника
+            var employeeExists = await _context.Employee.AnyAsync(e => e.Id == DefaultEmployeeId);
+            if (!employeeExists)
+            {
+                Console.WriteLine("Сотрудник не найден.");
+                return NotFound("Сотрудник не найден.");
             }
 
             // Проверяем, нет ли пересечений бронирования на это время
