@@ -43,10 +43,9 @@ public class ReservationController : ControllerBase
             {
                 CustomerId = request.CustomerId,
                 TableId = request.TableId,
-                ReservationTime = request.ReservationTime,
+                ReservationTime = DateTime.UtcNow,  // Устанавливаем время без временной зоны
                 EmployeeId = DefaultEmployeeId,
-                CreatedAt = DateTime.UtcNow,
-                Status = "Reserved" // Всегда "Reserved"
+                Status = "Reserved"
             };
 
             _context.Reservations.Add(reservation);
