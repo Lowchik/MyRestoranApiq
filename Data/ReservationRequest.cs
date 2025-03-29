@@ -1,6 +1,8 @@
 using System.Text.Json.Serialization;
 using MyRestoranApi.Data;
+using System.ComponentModel.DataAnnotations.Schema;
 
+[Table("reservations")] // ”казываем им€ таблицы в базе данных
 public class Reservation
 {
     public int Id { get; set; }
