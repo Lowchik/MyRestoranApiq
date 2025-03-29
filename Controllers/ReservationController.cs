@@ -15,78 +15,58 @@ public class ReservationController : ControllerBase
         Console.WriteLine("Создан контролер");
     }
 
-    // Создание бронирования
     [HttpPost("reservation")]
     public async Task<IActionResult> CreateReservation([FromBody] Reservation request)
     {
-        Console.WriteLine($"zapros na bronirovanie: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime}");
+        Console.WriteLine($"Запрос на бронирование: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime}");
 
         try
         {
-            // Проверка на существование клиента
+            // Проверка, существует ли клиент
             var customerExists = await _context.Customers.AnyAsync(c => c.Id == request.CustomerId);
             if (!customerExists)
             {
-                Console.WriteLine("Client ne nayden.");
-                return NotFound("Client ne nayden.");
+                Console.WriteLine("Клиент не найден.");
+                return NotFound(new { message = "Клиент не найден." });
             }
 
             // Проверяем, существует ли стол
-            var table = await _context.Tables.FindAsync(request.TableId);
-            if (table == null)
+            var tableExists = await _context.Tables.AnyAsync(t => t.Id == request.TableId);
+            if (!tableExists)
             {
-                Console.WriteLine("Stol ne nayden.");
-                return NotFound("Stol ne nayden.");
+                Console.WriteLine("Стол не найден.");
+                return NotFound(new { message = "Стол не найден." });
             }
 
-            // Проверка на существование сотрудника
-            var employeeExists = await _context.Employee.AnyAsync(e => e.Id == DefaultEmployeeId);
-            if (!employeeExists)
-            {
-                Console.WriteLine("Staff ne nayden.");
-                return NotFound("Staff ne nayden.");
-            }
-
-            // Проверяем, нет ли пересечений бронирования на это время
-            var overlappingReservation = await _context.Reservations
-                .AnyAsync(r => r.TableId == request.TableId && r.ReservationTime == request.ReservationTime);
-
-            if (overlappingReservation)
-            {
-                Console.WriteLine("Ston yje sabronirovan na eto time.");
-                return BadRequest("Ston yje sabronirovan na eto time.");
-            }
-
-            // Создаем бронирование
+            // Просто добавляем новое бронирование без обновления статусов
             var reservation = new Reservation
             {
                 CustomerId = request.CustomerId,
                 TableId = request.TableId,
                 ReservationTime = request.ReservationTime,
-                EmployeeId = DefaultEmployeeId, // Всегда ID = 1
+                EmployeeId = DefaultEmployeeId,
                 CreatedAt = DateTime.UtcNow,
-                Status = Reservation.ReservationStatus.Reserved.ToString()
-
+                Status = "Reserved" // Всегда "Reserved"
             };
 
             _context.Reservations.Add(reservation);
             await _context.SaveChangesAsync();
 
-            Console.WriteLine($"Bronirovanie cosdano {request.CustomerId}, стол {request.TableId}.");
+            Console.WriteLine($"Бронирование создано: Клиент {request.CustomerId}, стол {request.TableId}.");
 
             return Ok(new
             {
-                message = "Stol yspex!",
-                reservationId = reservation.Id,
-                employeeId = DefaultEmployeeId
+                message = "Бронирование успешно создано!",
+                reservationId = reservation.Id
             });
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"error server: {ex.Message}");
-            return StatusCode(500, $"error server: {ex.Message}");
+            Console.WriteLine($"Ошибка сервера: {ex.Message}");
+            return StatusCode(500, new { message = "Ошибка сервера", error = ex.Message });
         }
     }
+
 
     // Получить список всех бронирований
     [HttpGet]
