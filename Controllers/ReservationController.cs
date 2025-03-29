@@ -18,7 +18,7 @@ public class ReservationController : ControllerBase
     [HttpPost("reservation")]
     public async Task<IActionResult> CreateReservation([FromBody] Reservation request)
     {
-        Console.WriteLine($"Zaproc na bronirovanie: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime}");
+        Console.WriteLine($"Запрос на бронирование: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime}");
 
         try
         {
@@ -26,16 +26,16 @@ public class ReservationController : ControllerBase
             var customerExists = await _context.Customers.AnyAsync(c => c.Id == request.CustomerId);
             if (!customerExists)
             {
-                Console.WriteLine("Client ne nayden.");
-                return NotFound(new { message = "Client ne nayden." });
+                Console.WriteLine("Клиент не найден.");
+                return NotFound(new { message = "Клиент не найден." });
             }
 
             // Проверяем, существует ли стол
             var tableExists = await _context.Tables.AnyAsync(t => t.Id == request.TableId);
             if (!tableExists)
             {
-                Console.WriteLine("Stol ne nayden.");
-                return NotFound(new { message = "Stol ne nayden." });
+                Console.WriteLine("Стол не найден.");
+                return NotFound(new { message = "Стол не найден." });
             }
 
             // Просто добавляем новое бронирование без обновления статусов
@@ -50,20 +50,34 @@ public class ReservationController : ControllerBase
             };
 
             _context.Reservations.Add(reservation);
-            await _context.SaveChangesAsync();
 
-            Console.WriteLine($"Bronirovanie cosdano: Client {request.CustomerId}, Stol {request.TableId}.");
+            // Начинаем транзакцию
+            using var transaction = await _context.Database.BeginTransactionAsync();
+            try
+            {
+                await _context.SaveChangesAsync();
+                await transaction.CommitAsync(); // Завершаем транзакцию
+            }
+            catch (Exception ex)
+            {
+                await transaction.RollbackAsync(); // Откатываем транзакцию в случае ошибки
+                Console.WriteLine($"Ошибка при сохранении: {ex.Message}");
+                Console.WriteLine($"Вложенное исключение: {ex.InnerException?.Message}");
+                return StatusCode(500, new { message = "Ошибка сервера", error = ex.Message });
+            }
+
+            Console.WriteLine($"Бронирование создано: Клиент {request.CustomerId}, стол {request.TableId}.");
 
             return Ok(new
             {
-                message = "Bronirovanie ycpeshno create!",
+                message = "Бронирование успешно создано!",
                 reservationId = reservation.Id
             });
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error server: {ex.Message}");
-            return StatusCode(500, new { message = "Error server", error = ex.Message });
+            Console.WriteLine($"Ошибка сервера: {ex.Message}");
+            return StatusCode(500, new { message = "Ошибка сервера", error = ex.Message });
         }
     }
 
