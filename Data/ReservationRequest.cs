@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace MyRestoranApi.Data
 {
@@ -43,7 +44,9 @@ namespace MyRestoranApi.Data
             Cancelled   // Отменено
         }
 
+        [JsonIgnore]
         public Customer Customer { get; set; }
+        [JsonIgnore]
         public Table Table { get; set; }
     }
 }
