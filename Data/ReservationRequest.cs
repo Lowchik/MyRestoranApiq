@@ -1,21 +1,39 @@
-using System.Text.Json.Serialization;
-using MyRestoranApi.Data;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-[Table("reservations")] // Указываем имя таблицы в базе данных
-public class Reservation
+namespace MyRestoranApi.Data
 {
-    public int Id { get; set; }
-    public int CustomerId { get; set; }
-    public int TableId { get; set; }
+    [Table("reservations")] // Указываем правильное имя таблицы в базе данных
+    public class Reservation
+    {
+        [Key] // Указываем, что это основной ключ
+        [Column("id")] // Указываем имя колонки в базе данных
+        public int Id { get; set; }
 
-    // Используем DateTime вместо DateTimeOffset для хранения времени без временной зоны
-    public DateTime ReservationTime { get; set; } // Время без временной зоны
+        [Required] // Обязательно для заполнения
+        [ForeignKey("Customer")] // Связь с таблицей customers
+        [Column("customer_id")] // Указываем имя колонки в базе данных
+        public int CustomerId { get; set; }
 
-    public int EmployeeId { get; set; }
+        [Required] // Обязательно для заполнения
+        [ForeignKey("Table")] // Связь с таблицей tables
+        [Column("table_id")] // Указываем имя колонки в базе данных
+        public int TableId { get; set; }
 
-    // Устанавливаем время создания без временной зоны, с использованием UTC
-    public DateTime CreatedAt { get; set; } = DateTime.UtcNow; // Время в UTC без временной зоны
+        [Required] // Время бронирования обязательно
+        [Column("reservation_time")] // Указываем имя колонки в базе данных
+        public DateTime ReservationTime { get; set; }
 
-    public string Status { get; set; } = "Reserved"; // Всегда "Reserved"
+        [ForeignKey("Employee")] // Связь с таблицей employees
+        [Column("employee_id")] // Указываем имя колонки в базе данных
+        public int? EmployeeId { get; set; } // Nullable, так как не всегда может быть указан
+
+        [Column("created_at")] // Указываем имя колонки в базе данных
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow; // Время по умолчанию в UTC
+
+        [Required] // Статус всегда должен быть указан
+        [MaxLength(50)] // Максимальная длина строки
+        [Column("status")] // Указываем имя колонки в базе данных
+        public string Status { get; set; } = "Reserved"; // Статус по умолчанию
+    }
 }
