@@ -12,13 +12,13 @@ public class ReservationController : ControllerBase
     public ReservationController(AppDbContext context)
     {
         _context = context;
-        Console.WriteLine("Создан контролер");
+        Console.WriteLine("Create controller");
     }
 
     [HttpPost("reservation")]
     public async Task<IActionResult> CreateReservation([FromBody] Reservation request)
     {
-        Console.WriteLine($"Запрос на бронирование: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime}");
+        Console.WriteLine($"Zaproc na bronirovanie: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime}");
 
         try
         {
@@ -26,16 +26,16 @@ public class ReservationController : ControllerBase
             var customerExists = await _context.Customers.AnyAsync(c => c.Id == request.CustomerId);
             if (!customerExists)
             {
-                Console.WriteLine("Клиент не найден.");
-                return NotFound(new { message = "Клиент не найден." });
+                Console.WriteLine("Client ne nayden.");
+                return NotFound(new { message = "Client ne nayden." });
             }
 
             // Проверяем, существует ли стол
             var tableExists = await _context.Tables.AnyAsync(t => t.Id == request.TableId);
             if (!tableExists)
             {
-                Console.WriteLine("Стол не найден.");
-                return NotFound(new { message = "Стол не найден." });
+                Console.WriteLine("Stol ne nayden.");
+                return NotFound(new { message = "Stol ne nayden." });
             }
 
             // Просто добавляем новое бронирование без обновления статусов
@@ -52,18 +52,18 @@ public class ReservationController : ControllerBase
             _context.Reservations.Add(reservation);
             await _context.SaveChangesAsync();
 
-            Console.WriteLine($"Бронирование создано: Клиент {request.CustomerId}, стол {request.TableId}.");
+            Console.WriteLine($"Bronirovanie cosdano: Client {request.CustomerId}, Stol {request.TableId}.");
 
             return Ok(new
             {
-                message = "Бронирование успешно создано!",
+                message = "Bronirovanie ycpeshno create!",
                 reservationId = reservation.Id
             });
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Ошибка сервера: {ex.Message}");
-            return StatusCode(500, new { message = "Ошибка сервера", error = ex.Message });
+            Console.WriteLine($"Error server: {ex.Message}");
+            return StatusCode(500, new { message = "Error server", error = ex.Message });
         }
     }
 
