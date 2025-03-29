@@ -74,10 +74,7 @@ public class ReservationController : ControllerBase
     {
         try
         {
-            var reservations = await _context.Reservations
-                .Include(r => r.Customer)
-                .Include(r => r.Table)
-                .ToListAsync();
+            var reservations = await _context.Reservations.ToListAsync();
 
             return Ok(reservations);
         }
