@@ -17,7 +17,7 @@ public class ReservationController : ControllerBase
     [HttpPost("reservation")]
     public async Task<IActionResult> CreateReservation([FromBody] Reservation request)
     {
-        Console.WriteLine($"Zaproc na  bronirovanie: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime} до {request.EndTime}");
+        Console.WriteLine($"Zaproc na  bronirovanie: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime} do {request.EndTime}");
 
         try
         {
@@ -59,8 +59,8 @@ public class ReservationController : ControllerBase
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                Console.WriteLine($"Ошибка при сохранении: {ex.Message}");
-                return StatusCode(500, new { message = "Ошибка сервера", error = ex.Message });
+                Console.WriteLine($"Error Save: {ex.Message}");
+                return StatusCode(500, new { message = "Error server", error = ex.Message });
             }
 
             Console.WriteLine($"Бронирование создано: Клиент {request.CustomerId}, стол {request.TableId}, c {reservation.ReservationTime} до {reservation.EndTime}.");

@@ -29,12 +29,11 @@ namespace MyRestoranApi.Data
         public int? EmployeeId { get; set; } 
 
         [Column("created_at")] 
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime CreatedAt { get; set; } 
 
         [Required] 
         [MaxLength(50)] 
         [Column("status")]
-
         public string Status { get; set; } = "Reserved"; 
 
         [Required]
