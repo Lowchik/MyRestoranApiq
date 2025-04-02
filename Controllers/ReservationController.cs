@@ -7,21 +7,22 @@ using MyRestoranApi.Data;
 public class ReservationController : ControllerBase
 {
     private readonly AppDbContext _context;
-    private const int DefaultEmployeeId = 1; 
+    private const int DefaultEmployeeId = 1; // Всегда назначаем ID сотрудника = 1
 
     public ReservationController(AppDbContext context)
     {
         _context = context;
         Console.WriteLine("Create controller");
     }
+
     [HttpPost("reservation")]
     public async Task<IActionResult> CreateReservation([FromBody] Reservation request)
     {
-        Console.WriteLine($"Zaproc na  bronirovanie: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime} do {request.EndTime}");
+        Console.WriteLine($"Запрос на бронирование: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime}");
 
         try
         {
-            
+            // Проверка, существует ли клиент
             var customerExists = await _context.Customers.AnyAsync(c => c.Id == request.CustomerId);
             if (!customerExists)
             {
@@ -29,7 +30,7 @@ public class ReservationController : ControllerBase
                 return NotFound(new { message = "Клиент не найден." });
             }
 
-      
+            // Проверяем, существует ли стол
             var tableExists = await _context.Tables.AnyAsync(t => t.Id == request.TableId);
             if (!tableExists)
             {
@@ -37,34 +38,35 @@ public class ReservationController : ControllerBase
                 return NotFound(new { message = "Стол не найден." });
             }
 
-           
+            // Просто добавляем новое бронирование без обновления статусов
             var reservation = new Reservation
             {
                 CustomerId = request.CustomerId,
                 TableId = request.TableId,
-                ReservationTime = request.ReservationTime, 
-                EndTime = request.EndTime,
+                ReservationTime = DateTime.UtcNow,  // Устанавливаем время без временной зоны
+                EndTime = DateTime.UtcNow,
                 EmployeeId = DefaultEmployeeId,
-                Status = "Reserved",
-                CreatedAt = DateTime.UtcNow
+                Status = "Reserved"
             };
 
             _context.Reservations.Add(reservation);
 
+            // Начинаем транзакцию
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 await _context.SaveChangesAsync();
-                await transaction.CommitAsync();
+                await transaction.CommitAsync(); // Завершаем транзакцию
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync();
-                Console.WriteLine($"Error Save: {ex.Message}");
-                return StatusCode(500, new { message = "Error server", error = ex.Message });
+                await transaction.RollbackAsync(); // Откатываем транзакцию в случае ошибки
+                Console.WriteLine($"Ошибка при сохранении: {ex.Message}");
+                Console.WriteLine($"Вложенное исключение: {ex.InnerException?.Message}");
+                return StatusCode(500, new { message = "Ошибка сервера", error = ex.Message });
             }
 
-            Console.WriteLine($"Бронирование создано: Клиент {request.CustomerId}, стол {request.TableId}, c {reservation.ReservationTime} до {reservation.EndTime}.");
+            Console.WriteLine($"Бронирование создано: Клиент {request.CustomerId}, стол {request.TableId}.");
 
             return Ok(new
             {
@@ -80,9 +82,7 @@ public class ReservationController : ControllerBase
     }
 
 
-
-
-
+    // Получить список всех бронирований
     [HttpGet]
     public async Task<IActionResult> GetReservations()
     {
@@ -99,6 +99,7 @@ public class ReservationController : ControllerBase
         }
     }
 
+    // Получить список всех столов
     [HttpGet("tables")]
     public async Task<IActionResult> GetTables()
     {
