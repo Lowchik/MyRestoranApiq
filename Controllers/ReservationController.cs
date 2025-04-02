@@ -45,7 +45,8 @@ public class ReservationController : ControllerBase
                 ReservationTime = request.ReservationTime, 
                 EndTime = request.EndTime,
                 EmployeeId = DefaultEmployeeId,
-                Status = "Reserved"
+                Status = "Reserved",
+                CreatedAt = DateTime.UtcNow
             };
 
             _context.Reservations.Add(reservation);
