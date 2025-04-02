@@ -22,7 +22,7 @@ public class ReservationController : ControllerBase
 
         try
         {
-            // Проверка, существует ли клиент
+            // Проверяем, существует ли клиент
             var customerExists = await _context.Customers.AnyAsync(c => c.Id == request.CustomerId);
             if (!customerExists)
             {
@@ -38,34 +38,33 @@ public class ReservationController : ControllerBase
                 return NotFound(new { message = "Стол не найден." });
             }
 
-            // Просто добавляем новое бронирование без обновления статусов
+            // Добавляем бронирование с учетом конца бронирования (2 часа после начала)
             var reservation = new Reservation
             {
                 CustomerId = request.CustomerId,
                 TableId = request.TableId,
-                ReservationTime = DateTime.UtcNow,  // Устанавливаем время без временной зоны
+                ReservationTime = request.ReservationTime, // Дата и время начала бронирования
+                EndTime = request.ReservationTime.AddHours(2), // Конец бронирования через 2 часа
                 EmployeeId = DefaultEmployeeId,
                 Status = "Reserved"
             };
 
             _context.Reservations.Add(reservation);
 
-            // Начинаем транзакцию
             using var transaction = await _context.Database.BeginTransactionAsync();
             try
             {
                 await _context.SaveChangesAsync();
-                await transaction.CommitAsync(); // Завершаем транзакцию
+                await transaction.CommitAsync();
             }
             catch (Exception ex)
             {
-                await transaction.RollbackAsync(); // Откатываем транзакцию в случае ошибки
+                await transaction.RollbackAsync();
                 Console.WriteLine($"Ошибка при сохранении: {ex.Message}");
-                Console.WriteLine($"Вложенное исключение: {ex.InnerException?.Message}");
                 return StatusCode(500, new { message = "Ошибка сервера", error = ex.Message });
             }
 
-            Console.WriteLine($"Бронирование создано: Клиент {request.CustomerId}, стол {request.TableId}.");
+            Console.WriteLine($"Бронирование создано: Клиент {request.CustomerId}, стол {request.TableId}, c {reservation.ReservationTime} до {reservation.EndTime}.");
 
             return Ok(new
             {
@@ -79,6 +78,7 @@ public class ReservationController : ControllerBase
             return StatusCode(500, new { message = "Ошибка сервера", error = ex.Message });
         }
     }
+
 
 
     // Получить список всех бронирований

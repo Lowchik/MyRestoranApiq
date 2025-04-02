@@ -6,34 +6,39 @@ namespace MyRestoranApi.Data
     [Table("reservations")] // Указываем правильное имя таблицы в базе данных
     public class Reservation
     {
-        [Key] // Указываем, что это основной ключ
-        [Column("id")] // Указываем имя колонки в базе данных
+        [Key]
+        [Column("id")] 
         public int Id { get; set; }
 
-        [Required] // Обязательно для заполнения
-        [ForeignKey("Customer")] // Связь с таблицей customers
-        [Column("customer_id")] // Указываем имя колонки в базе данных
+        [Required] 
+        [ForeignKey("Customer")] 
+        [Column("customer_id")] 
         public int CustomerId { get; set; }
 
-        [Required] // Обязательно для заполнения
-        [ForeignKey("Table")] // Связь с таблицей tables
-        [Column("table_id")] // Указываем имя колонки в базе данных
+        [Required] 
+        [ForeignKey("Table")] 
+        [Column("table_id")] 
         public int TableId { get; set; }
 
-        [Required] // Время бронирования обязательно
-        [Column("reservation_time")] // Указываем имя колонки в базе данных
+        [Required] 
+        [Column("reservation_time")] 
         public DateTime ReservationTime { get; set; }
 
-        [ForeignKey("Employee")] // Связь с таблицей employees
-        [Column("employee_id")] // Указываем имя колонки в базе данных
-        public int? EmployeeId { get; set; } // Nullable, так как не всегда может быть указан
+        [ForeignKey("Employee")] 
+        [Column("employee_id")] 
+        public int? EmployeeId { get; set; } 
 
-        [Column("created_at")] // Указываем имя колонки в базе данных
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow; // Время по умолчанию в UTC
+        [Column("created_at")] 
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        [Required] // Статус всегда должен быть указан
-        [MaxLength(50)] // Максимальная длина строки
-        [Column("status")] // Указываем имя колонки в базе данных
-        public string Status { get; set; } = "Reserved"; // Статус по умолчанию
+        [Required] 
+        [MaxLength(50)] 
+        [Column("status")]
+
+        public string Status { get; set; } = "Reserved"; 
+
+        [Required]
+        [Column("end_time")] 
+        public DateTime EndTime { get; set; }
     }
 }
