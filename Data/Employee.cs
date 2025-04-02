@@ -32,5 +32,12 @@ namespace MyRestoranApi.Data
         [Column("phone")]
         [MaxLength(20)]
         public string? Phone { get; set; } // Может быть пустым
+        public Employee(int userId, string position, string firstName, string lastName)
+        {
+            UserId = userId;
+            Position = position;
+            FirstName = firstName;
+            LastName = lastName;
+        }
     }
 }
