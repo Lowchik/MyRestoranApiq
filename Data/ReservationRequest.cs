@@ -39,5 +39,14 @@ namespace MyRestoranApi.Data
         [Required]
         [Column("end_time")] 
         public DateTime EndTime { get; set; }
+
+        public void SetUnspecifiedTime()
+        {
+            if (ReservationTime.Kind != DateTimeKind.Unspecified)
+                ReservationTime = DateTime.SpecifyKind(ReservationTime, DateTimeKind.Unspecified);
+
+            if (EndTime.Kind != DateTimeKind.Unspecified)
+                EndTime = DateTime.SpecifyKind(EndTime, DateTimeKind.Unspecified);
+        }
     }
 }
