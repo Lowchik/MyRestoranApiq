@@ -7,22 +7,21 @@ using MyRestoranApi.Data;
 public class ReservationController : ControllerBase
 {
     private readonly AppDbContext _context;
-    private const int DefaultEmployeeId = 1; // Всегда назначаем ID сотрудника = 1
+    private const int DefaultEmployeeId = 1; 
 
     public ReservationController(AppDbContext context)
     {
         _context = context;
         Console.WriteLine("Create controller");
     }
-
     [HttpPost("reservation")]
     public async Task<IActionResult> CreateReservation([FromBody] Reservation request)
     {
-        Console.WriteLine($"Запрос на бронирование: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime}");
+        Console.WriteLine($"Запрос на бронирование: Customer {request.CustomerId}, Table {request.TableId}, Time {request.ReservationTime} до {request.EndTime}");
 
         try
         {
-            // Проверяем, существует ли клиент
+            
             var customerExists = await _context.Customers.AnyAsync(c => c.Id == request.CustomerId);
             if (!customerExists)
             {
@@ -30,7 +29,7 @@ public class ReservationController : ControllerBase
                 return NotFound(new { message = "Клиент не найден." });
             }
 
-            // Проверяем, существует ли стол
+      
             var tableExists = await _context.Tables.AnyAsync(t => t.Id == request.TableId);
             if (!tableExists)
             {
@@ -38,13 +37,13 @@ public class ReservationController : ControllerBase
                 return NotFound(new { message = "Стол не найден." });
             }
 
-            // Добавляем бронирование с учетом конца бронирования (2 часа после начала)
+           
             var reservation = new Reservation
             {
                 CustomerId = request.CustomerId,
                 TableId = request.TableId,
-                ReservationTime = request.ReservationTime, // Дата и время начала бронирования
-                EndTime = request.ReservationTime.AddHours(2), // Конец бронирования через 2 часа
+                ReservationTime = request.ReservationTime, 
+                EndTime = request.EndTime,
                 EmployeeId = DefaultEmployeeId,
                 Status = "Reserved"
             };
@@ -81,7 +80,8 @@ public class ReservationController : ControllerBase
 
 
 
-    // Получить список всех бронирований
+
+
     [HttpGet]
     public async Task<IActionResult> GetReservations()
     {
@@ -98,7 +98,6 @@ public class ReservationController : ControllerBase
         }
     }
 
-    // Получить список всех столов
     [HttpGet("tables")]
     public async Task<IActionResult> GetTables()
     {
