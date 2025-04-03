@@ -39,15 +39,17 @@ public class ReservationController : ControllerBase
             }
 
 
+       
             var reservation = new Reservation
             {
                 CustomerId = request.CustomerId,
                 TableId = request.TableId,
-                ReservationTime = request.ReservationTime.ToLocalTime(),  
-                EndTime = request.EndTime.ToLocalTime(),  
+                ReservationTime = DateTime.UtcNow,
+                EndTime = DateTime.UtcNow,
                 EmployeeId = DefaultEmployeeId,
                 Status = "Reserved"
             };
+
 
 
             _context.Reservations.Add(reservation);
