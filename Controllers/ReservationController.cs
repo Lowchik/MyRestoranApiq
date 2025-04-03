@@ -38,16 +38,17 @@ public class ReservationController : ControllerBase
                 return NotFound(new { message = "Stol ne nayden." });
             }
 
-           
+
             var reservation = new Reservation
             {
                 CustomerId = request.CustomerId,
                 TableId = request.TableId,
-                ReservationTime = request.ReservationTime,
-                EndTime = request.EndTime,  
+                ReservationTime = request.ReservationTime.ToLocalTime(),  
+                EndTime = request.EndTime.ToLocalTime(),  
                 EmployeeId = DefaultEmployeeId,
                 Status = "Reserved"
             };
+
 
             _context.Reservations.Add(reservation);
 
