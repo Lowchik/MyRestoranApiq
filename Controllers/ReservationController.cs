@@ -43,8 +43,8 @@ public class ReservationController : ControllerBase
             {
                 CustomerId = request.CustomerId,
                 TableId = request.TableId,
-                ReservationTime = request.ReservationTime, 
-                EndTime = request.EndTime,
+                ReservationTime = DateTime.UtcNow,
+                EndTime = DateTime.UtcNow,
                 EmployeeId = DefaultEmployeeId,
                 Status = "Reserved"
             };
