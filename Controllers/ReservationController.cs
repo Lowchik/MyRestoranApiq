@@ -18,6 +18,7 @@ public class ReservationController : ControllerBase
     [HttpPost("reservation")]
     public async Task<IActionResult> CreateReservation([FromBody] Reservation request)
     {
+
         Console.WriteLine($"Запрос на бронирование: Customer {request.CustomerId}, Table {request.TableId}, Time start {request.ReservationTime} Time end {request.EndTime}");
 
         try
@@ -84,7 +85,6 @@ public class ReservationController : ControllerBase
     }
 
 
-
     [HttpGet]
     public async Task<IActionResult> GetReservations()
     {
@@ -113,6 +113,33 @@ public class ReservationController : ControllerBase
         {
             Console.WriteLine($"Ошибка при получении столов: {ex.Message}");
             return StatusCode(500, $"Ошибка сервера: {ex.Message}");
+        }
+    }
+
+    [HttpGet("reservations/forDate")]
+    public async Task<IActionResult> GetReservationsForDate([FromQuery] string date, [FromQuery] string startTime, [FromQuery] string endTime)
+    {
+        try
+        {
+            
+            var reservationDate = DateTime.Parse(date).ToUniversalTime();
+            var startDateTime = DateTime.Parse($"{date} {startTime}").ToUniversalTime();
+            var endDateTime = DateTime.Parse($"{date} {endTime}").ToUniversalTime();
+
+            // Получаем все бронирования на эту дату и время
+            var reservations = await _context.Reservations
+                .Where(r => r.ReservationTime < endDateTime && r.EndTime > startDateTime)
+                .ToListAsync();
+
+            // Возвращаем список забронированных столов
+            var reservedTableIds = reservations.Select(r => r.TableId).ToList();
+
+            return Ok(reservedTableIds);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка при получении бронирований: {ex.Message}");
+            return StatusCode(500, new { message = "Server error", error = ex.Message });
         }
     }
 }
