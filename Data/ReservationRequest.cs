@@ -22,7 +22,7 @@ namespace MyRestoranApi.Data
 
         [Required] 
         [Column("reservation_time")] 
-        public DateTime ReservationTime { get; set; }
+        public DateTime ReservationTime { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("Employee")] 
         [Column("employee_id")] 
@@ -39,7 +39,7 @@ namespace MyRestoranApi.Data
 
         [Required]
         [Column("end_time")] 
-        public DateTime EndTime { get; set; }
+        public DateTime EndTime { get; set; } = DateTime.UtcNow;
 
     }
 }
