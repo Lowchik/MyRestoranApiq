@@ -39,21 +39,15 @@ public class ReservationController : ControllerBase
             }
 
             
-            var reservationTime = request.ReservationTime; 
-            var endTime = request.EndTime; 
-
-          
-            reservationTime = DateTime.SpecifyKind(reservationTime, DateTimeKind.Utc);
-            endTime = DateTime.SpecifyKind(endTime, DateTimeKind.Utc);
-
-
+            var reservationTime = (request.ReservationTime).ToUniversalTime();
+            var endTime = (request.EndTime).ToUniversalTime();
 
             var reservation = new Reservation
             {
                 CustomerId = request.CustomerId,
                 TableId = request.TableId,
-                ReservationTime = reservationTime,  
-                EndTime = endTime,  
+                ReservationTime = reservationTime,
+                EndTime = endTime,
                 EmployeeId = DefaultEmployeeId,
                 Status = "Reserved"
             };
@@ -88,6 +82,7 @@ public class ReservationController : ControllerBase
             return StatusCode(500, new { message = "Server error", error = ex.Message });
         }
     }
+
 
 
     [HttpGet]
