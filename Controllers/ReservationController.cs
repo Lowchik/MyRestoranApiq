@@ -117,24 +117,24 @@ public class ReservationController : ControllerBase
     }
 
     [HttpGet("reservations/forDate")]
-    public async Task<IActionResult> GetReservationsForDate([FromQuery] string date, [FromQuery] string startTime, [FromQuery] string endTime)
+    public async Task<IActionResult> GetReservationsForDate([FromQuery] string date)
     {
         try
         {
-            
-            var reservationDate = DateTime.Parse(date).ToUniversalTime();
-            var startDateTime = DateTime.Parse($"{date} {startTime}").ToUniversalTime();
-            var endDateTime = DateTime.Parse($"{date} {endTime}").ToUniversalTime();
+            var parsedDate = DateTime.Parse(date).Date;
 
-            // ѕолучаем все бронировани€ на эту дату и врем€
+            // ѕолучаем все бронировани€ на указанную дату
             var reservations = await _context.Reservations
-                .Where(r => r.ReservationTime < endDateTime && r.EndTime > startDateTime)
+                .Where(r => r.ReservationTime.Date == parsedDate)
+                .Select(r => new
+                {
+                    TableId = r.TableId,
+                    StartTime = r.ReservationTime,
+                    EndTime = r.EndTime
+                })
                 .ToListAsync();
 
-            // ¬озвращаем список забронированных столов
-            var reservedTableIds = reservations.Select(r => r.TableId).ToList();
-
-            return Ok(reservedTableIds);
+            return Ok(reservations);
         }
         catch (Exception ex)
         {
@@ -142,4 +142,5 @@ public class ReservationController : ControllerBase
             return StatusCode(500, new { message = "Server error", error = ex.Message });
         }
     }
+
 }
