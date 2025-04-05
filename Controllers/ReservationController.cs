@@ -121,9 +121,8 @@ public class ReservationController : ControllerBase
     {
         try
         {
-            var parsedDate = DateTime.Parse(date).Date;
+            var parsedDate = DateTime.SpecifyKind(DateTime.Parse(date).Date, DateTimeKind.Utc);
 
-            // Получаем все бронирования на указанную дату
             var reservations = await _context.Reservations
                 .Where(r => r.ReservationTime.Date == parsedDate)
                 .Select(r => new
@@ -142,5 +141,6 @@ public class ReservationController : ControllerBase
             return StatusCode(500, new { message = "Server error", error = ex.Message });
         }
     }
+
 
 }
