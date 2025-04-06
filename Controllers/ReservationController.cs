@@ -142,5 +142,31 @@ public class ReservationController : ControllerBase
         }
     }
 
+    [HttpGet("history/{customerId}")]
+    public async Task<IActionResult> GetReservationHistory(int customerId)
+    {
+        try
+        {
+            var reservations = await _context.Reservations
+                .Where(r => r.CustomerId == customerId)
+                .OrderByDescending(r => r.ReservationTime)
+                .Select(r => new
+                {
+                    Date = r.ReservationTime.Date,
+                    StartTime = r.ReservationTime,
+                    EndTime = r.EndTime
+                })
+                .ToListAsync();
+
+            return Ok(reservations);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Ошибка при получении истории бронирований: {ex.Message}");
+            return StatusCode(500, new { message = "Server error", error = ex.Message });
+        }
+    }
+
+
 
 }
