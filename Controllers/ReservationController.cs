@@ -152,6 +152,7 @@ public class ReservationController : ControllerBase
                 .OrderByDescending(r => r.ReservationTime)
                 .Select(r => new
                 {
+                    TableId = r.TableId,
                     Date = r.ReservationTime.Date,
                     StartTime = r.ReservationTime,
                     EndTime = r.EndTime
