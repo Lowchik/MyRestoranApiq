@@ -15,6 +15,6 @@ namespace MyRestoranApi.Data
 
         public DbSet<Category> Categories { get; set; } 
         public DbSet<Dish> Dishes { get; set; }
-        public DbSet<CategoryWithDishesDto> CategoryWithDishesDto { get; set; }
+     
     }
 }
