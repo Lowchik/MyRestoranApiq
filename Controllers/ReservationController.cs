@@ -23,7 +23,7 @@ public class ReservationController : ControllerBase
 
         try
         {
-            // Проверяем, существует ли клиент
+          
             var customerExists = await _context.Customers.AnyAsync(c => c.Id == request.CustomerId);
             if (!customerExists)
             {
@@ -31,7 +31,6 @@ public class ReservationController : ControllerBase
                 return NotFound(new { message = "Client not found." });
             }
 
-            // Проверяем, существует ли стол
             var tableExists = await _context.Tables.AnyAsync(t => t.Id == request.TableId);
             if (!tableExists)
             {
@@ -53,7 +52,7 @@ public class ReservationController : ControllerBase
                 Status = "Reserved"
             };
 
-            // Добавляем бронирование в базу данных
+           
             _context.Reservations.Add(reservation);
 
             using var transaction = await _context.Database.BeginTransactionAsync();

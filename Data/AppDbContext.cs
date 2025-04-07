@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using MyRestoranApi.Dto;
 
 namespace MyRestoranApi.Data
 {
@@ -11,5 +12,9 @@ namespace MyRestoranApi.Data
         public DbSet<Table> Tables { get; set; }
 
         public DbSet<Employee> Employee { get; set; }
+
+        public DbSet<Category> Categories { get; set; } 
+        public DbSet<Dish> Dishes { get; set; }
+        public DbSet<CategoryWithDishesDto> CategoryWithDishesDto { get; set; }
     }
 }
