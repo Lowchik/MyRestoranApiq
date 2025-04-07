@@ -22,7 +22,7 @@ namespace MyRestoranApi.Data
         [Column("description")]
         public string? Description { get; set; }
 
-        [ForeignKey("Category")]
+        [ForeignKey("category_id")]
         [Column("category_id")]
         public int CategoryId { get; set; }
 

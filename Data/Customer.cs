@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyRestoranApi.Data
 {
-    [Table("customers")] // ”казываем правильное им€ таблицы
+    [Table("customers")] 
     public class Customer
     {
         [Key]
