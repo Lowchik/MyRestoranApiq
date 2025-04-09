@@ -30,7 +30,8 @@ public class MenuController : ControllerBase
                         Id = d.Id,
                         Name = d.Name,
                         Price = d.Price,
-                        Description = d.Description
+                        Description = d.Description,
+                        ImageUrl = d.ImageUrl
                     }).ToList()
                 })
                 .ToListAsync();
