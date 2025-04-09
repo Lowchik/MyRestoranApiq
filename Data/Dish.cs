@@ -21,6 +21,9 @@ namespace MyRestoranApi.Data
 
         [Column("description")]
         public string? Description { get; set; }
+        [Column("image_url")]
+        public string? ImageUrl { get; set; }
+
 
         [ForeignKey("category_id")]
         [Column("category_id")]
