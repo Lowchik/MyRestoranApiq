@@ -24,7 +24,7 @@ namespace MyRestoranApi.Controllers
                 return BadRequest("Invalid order data.");
             }
 
-            // Создание заказа
+            // Создаем заказ
             var order = new Order
             {
                 CustomerId = request.CustomerId,
@@ -35,30 +35,31 @@ namespace MyRestoranApi.Controllers
                 TotalPrice = request.TotalPrice,
                 OrderTime = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                EmployeeId = null // Устанавливаем EmployeeId как null
+                EmployeeId = null // Можно назначить, если необходимо
             };
 
-            // Добавляем заказ в базу
+            // Добавляем заказ в контекст
             _context.Orders.Add(order);
-            await _context.SaveChangesAsync(); // Сохраняем заказ, чтобы получить его ID
+            await _context.SaveChangesAsync();  // Сначала сохраняем заказ, чтобы получить его ID
 
-            // Добавляем элементы в заказ
+            // Создаем элементы для заказа
             foreach (var item in request.Items)
             {
                 var orderItem = new OrderItem
                 {
                     DishId = item.DishId,
                     Quantity = item.Quantity,
-                    OrderId = order.Id // Связываем OrderItem с Order
+                    OrderId = order.Id  // Привязываем элемент к заказу
                 };
 
-                // Добавляем orderItem в коллекцию OrderItems
+                // Добавляем элемент в контекст
                 _context.OrderItems.Add(orderItem);
             }
 
-            // Сохраняем изменения в OrderItems
+            // Сохраняем изменения для элементов заказа
             await _context.SaveChangesAsync();
 
+            // Возвращаем успешный ответ с данными созданного заказа
             return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
         }
 

@@ -1,7 +1,8 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Diagnostics.Metrics;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace MyRestoranApi.Data
 {
@@ -44,7 +45,9 @@ namespace MyRestoranApi.Data
         [MaxLength(500)]
         public string? DeliveryAddress { get; set; }
 
-        public List<OrderItem> OrderItems { get; set; } 
+        [JsonIgnore] 
+        public List<OrderItem> OrderItems { get; set; }
+
         public Customer? Customer { get; set; }
         public Courier? Courier { get; set; }
         public Employee? Employee { get; set; }
