@@ -14,15 +14,18 @@ namespace MyRestoranApi.Data
         [Required]
         public int OrderId { get; set; }
 
+        [ForeignKey("OrderId")]
+        public Order? Order { get; set; }
+
         [Column("dish_id")]
         [Required]
         public int DishId { get; set; }
 
+        [ForeignKey("DishId")]
+        public Dish? Dish { get; set; }
+
         [Column("quantity")]
         [Required]
         public int Quantity { get; set; }
-
-        public Order? Order { get; set; }
-        public Dish? Dish { get; set; }
     }
 }

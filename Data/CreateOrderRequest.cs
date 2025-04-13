@@ -8,16 +8,16 @@ namespace MyRestoranApi.Dto
         public int StatusId { get; set; }
         public int OrderTypeId { get; set; }
         public int? CourierId { get; set; }
-        public string? DeliveryAddress { get; set; }
+        public string DeliveryAddress { get; set; } = string.Empty;
         public decimal TotalPrice { get; set; }
-
-        public List<OrderItemDto> OrderItems { get; set; }
+        public List<OrderItems> Items { get; set; } = new();
     }
 
-    public class OrderItemDto
+    public class OrderItems
     {
         public int DishId { get; set; }
         public int Quantity { get; set; }
     }
+
 
 }

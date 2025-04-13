@@ -19,55 +19,49 @@ namespace MyRestoranApi.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
         {
-            // Проверка на правильность данных
-            if (request == null || request.OrderItems == null || !request.OrderItems.Any())
+            if (request == null || request.Items == null || !request.Items.Any())
             {
                 return BadRequest("Invalid order data.");
             }
 
-           
+            // Создание заказа
             var order = new Order
             {
                 CustomerId = request.CustomerId,
                 StatusId = request.StatusId,
                 OrderTypeId = request.OrderTypeId,
-                EmployeeId = null, 
                 CourierId = request.CourierId,
                 DeliveryAddress = request.DeliveryAddress,
                 TotalPrice = request.TotalPrice,
                 OrderTime = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow
+                UpdatedAt = DateTime.UtcNow,
+                EmployeeId = null // Устанавливаем EmployeeId как null
             };
 
-
+            // Добавляем заказ в базу
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-
-            order.OrderItems = new List<OrderItem>();
-
-            foreach (var orderItemDto in request.OrderItems)
+            // Добавляем элементы в заказ
+            foreach (var item in request.Items)
             {
                 var orderItem = new OrderItem
                 {
-                    OrderId = order.Id,
-                    DishId = orderItemDto.DishId,
-                    Quantity = orderItemDto.Quantity,
+                    DishId = item.DishId,
+                    Quantity = item.Quantity,
+                    OrderId = order.Id // Связываем OrderItem с Order
                 };
 
+                // Добавляем orderItem в коллекцию OrderItems
                 order.OrderItems.Add(orderItem);
             }
 
-         
-            _context.OrderItems.AddRange(order.OrderItems);
-
+            // Сохраняем изменения в OrderItems
             await _context.SaveChangesAsync();
-
 
             return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
         }
 
-        
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrderById(int id)
         {
