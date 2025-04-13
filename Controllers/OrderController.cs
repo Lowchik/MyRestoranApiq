@@ -63,22 +63,39 @@ namespace MyRestoranApi.Controllers
             return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
         }
         [HttpGet("{id}")]
-        public async Task<ActionResult<Order>> GetOrderById(int id)
+        public async Task<ActionResult<OrderResponseDto>> GetOrderById(int id)
         {
             var order = await _context.Orders
                 .Where(o => o.Id == id)
-                .Select(o => new
+                .Include(o => o.Customer)
+                .Include(o => o.Courier)
+                .Include(o => o.Status)
+                .Include(o => o.OrderType)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Dish)
+                .Select(o => new OrderResponseDto
                 {
-                    o.Id,
-                    o.CustomerId,
-                    o.OrderTime,
-                    o.StatusId,
-                    o.OrderTypeId,
-                    o.EmployeeId,
-                    o.UpdatedAt,
-                    o.TotalPrice,
-                    o.CourierId,
-                    o.DeliveryAddress
+                    Id = o.Id,
+                    OrderTime = o.OrderTime,
+                    DeliveryAddress = o.DeliveryAddress,
+                    TotalPrice = o.TotalPrice,
+                    CustomerName = o.Customer != null
+                        ? o.Customer.FirstName + " " + o.Customer.LastName
+                        : "Неизвестный клиент",
+                    CourierName = o.Courier != null
+                        ? o.Courier.FirstName + " " + o.Courier.LastName
+                        : "Без курьера",
+                    StatusName = o.Status != null
+                        ? o.Status.Name
+                        : "Неизвестный статус",
+                    OrderTypeName = o.OrderType != null
+                        ? o.OrderType.Name
+                        : "Неизвестный тип заказа",
+                    Items = o.OrderItems.Select(i => new OrderItemDto
+                    {
+                        DishName = i.Dish != null ? i.Dish.Name : "Неизвестное блюдо",
+                        Quantity = i.Quantity
+                    }).ToList()
                 })
                 .FirstOrDefaultAsync();
 
@@ -89,5 +106,7 @@ namespace MyRestoranApi.Controllers
 
             return Ok(order);
         }
+
+
     }
 }
