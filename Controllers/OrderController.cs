@@ -40,7 +40,7 @@ namespace MyRestoranApi.Controllers
 
             // Добавляем заказ в базу
             _context.Orders.Add(order);
-            await _context.SaveChangesAsync();
+            await _context.SaveChangesAsync(); // Сохраняем заказ, чтобы получить его ID
 
             // Добавляем элементы в заказ
             foreach (var item in request.Items)
@@ -53,7 +53,7 @@ namespace MyRestoranApi.Controllers
                 };
 
                 // Добавляем orderItem в коллекцию OrderItems
-                order.OrderItems.Add(orderItem);
+                _context.OrderItems.Add(orderItem);
             }
 
             // Сохраняем изменения в OrderItems
