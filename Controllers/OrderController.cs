@@ -41,9 +41,11 @@ namespace MyRestoranApi.Controllers
 
 
             _context.Orders.Add(order);
-            await _context.SaveChangesAsync();  
+            await _context.SaveChangesAsync();
 
-           
+
+            order.OrderItems = new List<OrderItem>();
+
             foreach (var orderItemDto in request.OrderItems)
             {
                 var orderItem = new OrderItem
@@ -53,13 +55,15 @@ namespace MyRestoranApi.Controllers
                     Quantity = orderItemDto.Quantity,
                 };
 
-                _context.OrderItems.Add(orderItem);
+                order.OrderItems.Add(orderItem);
             }
 
-            // Сохранение заказанных блюд
+         
+            _context.OrderItems.AddRange(order.OrderItems);
+
             await _context.SaveChangesAsync();
 
-            
+
             return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
         }
 
