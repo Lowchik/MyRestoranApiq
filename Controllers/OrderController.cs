@@ -35,40 +35,44 @@ namespace MyRestoranApi.Controllers
                 TotalPrice = request.TotalPrice,
                 OrderTime = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow,
-                EmployeeId = null // Можно назначить, если необходимо
+                EmployeeId = null 
             };
 
-            // Добавляем заказ в контекст
+           
             _context.Orders.Add(order);
-            await _context.SaveChangesAsync();  // Сначала сохраняем заказ, чтобы получить его ID
+            await _context.SaveChangesAsync(); 
 
-            // Создаем элементы для заказа
+           
             foreach (var item in request.Items)
             {
                 var orderItem = new OrderItem
                 {
                     DishId = item.DishId,
                     Quantity = item.Quantity,
-                    OrderId = order.Id  // Привязываем элемент к заказу
+                    OrderId = order.Id  
                 };
 
-                // Добавляем элемент в контекст
+               
                 _context.OrderItems.Add(orderItem);
             }
 
-            // Сохраняем изменения для элементов заказа
+           
             await _context.SaveChangesAsync();
 
-            // Возвращаем успешный ответ с данными созданного заказа
+            
             return CreatedAtAction(nameof(GetOrderById), new { id = order.Id }, order);
         }
-
         [HttpGet("{id}")]
         public async Task<ActionResult<Order>> GetOrderById(int id)
         {
             var order = await _context.Orders
-                .Include(o => o.OrderItems)
-                .ThenInclude(oi => oi.Dish)
+                .Include(o => o.Customer)      
+                .Include(o => o.Courier)      
+                .Include(o => o.Employee)      
+                .Include(o => o.OrderType)     
+                .Include(o => o.Status)        
+                .Include(o => o.OrderItems)    
+                    .ThenInclude(oi => oi.Dish) 
                 .FirstOrDefaultAsync(o => o.Id == id);
 
             if (order == null)
@@ -78,5 +82,6 @@ namespace MyRestoranApi.Controllers
 
             return order;
         }
+
     }
 }
