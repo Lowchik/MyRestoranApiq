@@ -44,7 +44,7 @@ namespace MyRestoranApi.Data
         [MaxLength(500)]
         public string? DeliveryAddress { get; set; }
 
-       
+        public List<OrderItem> OrderItems { get; set; } 
         public Customer? Customer { get; set; }
         public Courier? Courier { get; set; }
         public Employee? Employee { get; set; }
