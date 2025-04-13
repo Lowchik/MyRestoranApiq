@@ -24,7 +24,7 @@ namespace MyRestoranApi.Controllers
                 return BadRequest("Invalid order data.");
             }
 
-            // Создаем заказ
+        
             var order = new Order
             {
                 CustomerId = request.CustomerId,
@@ -66,22 +66,28 @@ namespace MyRestoranApi.Controllers
         public async Task<ActionResult<Order>> GetOrderById(int id)
         {
             var order = await _context.Orders
-                .Include(o => o.Customer)      
-                .Include(o => o.Courier)      
-                .Include(o => o.Employee)      
-                .Include(o => o.OrderType)     
-                .Include(o => o.Status)        
-                .Include(o => o.OrderItems)    
-                    .ThenInclude(oi => oi.Dish) 
-                .FirstOrDefaultAsync(o => o.Id == id);
+                .Where(o => o.Id == id)
+                .Select(o => new
+                {
+                    o.Id,
+                    o.CustomerId,
+                    o.OrderTime,
+                    o.StatusId,
+                    o.OrderTypeId,
+                    o.EmployeeId,
+                    o.UpdatedAt,
+                    o.TotalPrice,
+                    o.CourierId,
+                    o.DeliveryAddress
+                })
+                .FirstOrDefaultAsync();
 
             if (order == null)
             {
                 return NotFound();
             }
 
-            return order;
+            return Ok(order);
         }
-
     }
 }
