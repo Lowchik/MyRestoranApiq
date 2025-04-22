@@ -15,14 +15,12 @@ namespace MyRestoranApi.Controllers
             _context = context;
         }
 
-        // GET: api/status
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Status>>> GetStatuses()
         {
             return await _context.Statuses.ToListAsync();
         }
 
-        // GET: api/status/1
         [HttpGet("{id}")]
         public async Task<ActionResult<Status>> GetStatus(int id)
         {

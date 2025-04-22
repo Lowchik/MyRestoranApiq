@@ -15,14 +15,13 @@ namespace MyRestoranApi.Controllers
             _context = context;
         }
 
-        // GET: api/ordertype
         [HttpGet]
         public async Task<ActionResult<IEnumerable<OrderType>>> GetOrderTypes()
         {
             return await _context.OrderTypes.ToListAsync();
         }
 
-        // GET: api/ordertype/1
+      
         [HttpGet("{id}")]
         public async Task<ActionResult<OrderType>> GetOrderType(int id)
         {

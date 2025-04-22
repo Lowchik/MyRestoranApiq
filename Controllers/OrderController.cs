@@ -108,6 +108,45 @@ namespace MyRestoranApi.Controllers
             return Ok(order);
         }
 
+        [HttpGet("customer/{customerId}")]
+        public async Task<ActionResult<List<OrderResponseDto>>> GetOrdersByCustomerId(int customerId)
+        {
+            var orders = await _context.Orders
+                .Where(o => o.CustomerId == customerId)
+                .Include(o => o.Status)
+                .Include(o => o.OrderType)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Dish)
+                .Select(o => new OrderResponseDto
+                {
+                    Id = o.Id,
+                    OrderTime = o.OrderTime,
+                    DeliveryAddress = o.DeliveryAddress,
+                    TotalPrice = o.TotalPrice,
+                    CustomerName = o.Customer != null
+                        ? o.Customer.FirstName + " " + o.Customer.LastName
+                        : "Неизвестный клиент",
+                    CourierName = o.Courier != null
+                        ? o.Courier.FirstName + " " + o.Courier.LastName
+                        : "Без курьера",
+                    StatusName = o.Status != null
+                        ? o.Status.Name
+                        : "Неизвестный статус",
+                    OrderTypeName = o.OrderType != null
+                        ? o.OrderType.Name
+                        : "Неизвестный тип заказа",
+                    Items = o.OrderItems.Select(i => new OrderItemDto
+                    {
+                        DishName = i.Dish != null ? i.Dish.Name : "Неизвестное блюдо",
+                        Quantity = i.Quantity
+                    }).ToList()
+                })
+                .OrderByDescending(o => o.OrderTime) 
+                .ToListAsync();
+
+            return Ok(orders);
+        }
+
 
     }
 }
