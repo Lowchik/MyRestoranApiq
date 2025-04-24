@@ -119,13 +119,10 @@ namespace MyRestoranApi.Controllers
                     .ThenInclude(oi => oi.Dish)
                 .Select(o => new OrderResponseDto
                 {
-                    Id = o.Id,
+                   
                     OrderTime = o.OrderTime,
                     DeliveryAddress = o.DeliveryAddress,
                     TotalPrice = o.TotalPrice,
-                    CustomerName = o.Customer != null
-                        ? o.Customer.FirstName + " " + o.Customer.LastName
-                        : "Неизвестный клиент",
                     CourierName = o.Courier != null
                         ? o.Courier.FirstName + " " + o.Courier.LastName
                         : "Без курьера",
