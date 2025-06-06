@@ -19,7 +19,7 @@ namespace MyRestoranApi.Controllers
         {
             _context = context;
 
-            // Создаем папку, если она не существует
+         
             if (!Directory.Exists(_imageFolderPath))
             {
                 Directory.CreateDirectory(_imageFolderPath);
@@ -34,27 +34,27 @@ namespace MyRestoranApi.Controllers
                 return BadRequest("No file uploaded.");
             }
 
-            // Генерируем уникальное имя для файла
+            
             var fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
             var filePath = Path.Combine(_imageFolderPath, fileName);
 
-            // Сохраняем файл на сервере
+           
             using (var stream = new FileStream(filePath, FileMode.Create))
             {
                 await file.CopyToAsync(stream);
             }
 
-            // Получаем URL изображения
+
             var imageUrl = $"{Request.Scheme}://{Request.Host}/images/{fileName}";
 
-            // Обновляем запись о блюде в базе данных, добавляем путь к изображению
+          
             var dish = await _context.Dishes.FindAsync(dishId);
             if (dish == null)
             {
                 return NotFound("Dish not found.");
             }
 
-            // Обновляем поле с URL изображения
+         
             dish.ImageUrl = imageUrl;
             await _context.SaveChangesAsync();
 
