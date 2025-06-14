@@ -44,7 +44,7 @@ namespace MyRestoranApi.Controllers
 
             var roleName = user.Role.Name?.Trim();
 
-            if (!string.Equals(roleName, "Курьер", StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(roleName?.Normalize(), "Курьер".Normalize(), StringComparison.CurrentCultureIgnoreCase))
             {
                 return Unauthorized($"Dostup razreshyon tolko kuryeram. Rol polzovatelya: '{roleName}'");
             }
