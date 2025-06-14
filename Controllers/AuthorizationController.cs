@@ -34,15 +34,23 @@ namespace MyRestoranApi.Controllers
 
             if (user == null)
             {
-                return Unauthorized("error email or passsword.");
+                return Unauthorized("Nepravil'nyy email ili parol'.");
             }
 
-            if (user.Role.Name != "Курьер")
+            if (user.Role == null)
             {
-                return Unauthorized("Dostyp rasreshen tolko courier.");
+                return Unauthorized("Rol' pol'zovatelya ne naydena.");
             }
 
-          
+            var roleName = user.Role.Name?.Trim();
+
+            if (!string.Equals(roleName, "Курьер", StringComparison.OrdinalIgnoreCase))
+            {
+                return Unauthorized($"Dostup razreshyon tol'ko kur'yeram. Rol' pol'zovatelya: '{roleName}'");
+            }
+
+
+
             var courier = await _context.Couriers
                 .FirstOrDefaultAsync(c => c.UserId == user.Id);
 
