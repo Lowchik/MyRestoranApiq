@@ -1,21 +1,22 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MyRestoranApi.Data
 {
-    [Table("tables")] 
-    public class Table
+    [Table("roles")]
+    public class Role
     {
         [Key]
         [Column("id")]
         public int Id { get; set; }
 
-        [Column("table_number")]
         [Required]
-        public int TableNumber { get; set; } 
+        [MaxLength(50)]
+        [Column("name")]
+        public string Name { get; set; }
 
-        [Column("seats")]
-        [Required]
-        public int Seats { get; set; } 
+       
+        public List<User> Users { get; set; }
     }
 }

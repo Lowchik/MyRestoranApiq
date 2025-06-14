@@ -19,6 +19,9 @@ namespace MyRestoranApi.Data
         public DbSet<OrderType> OrderTypes { get; set; }
         public DbSet<Status> Statuses { get; set; }
         public DbSet<OrderItem> OrderItems { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Role> Roles { get; set; }
+
 
 
     }
