@@ -26,7 +26,7 @@ namespace MyRestoranApi.Controllers
                 return BadRequest("Email и пароль обязательны.");
             }
 
-            var hashedPassword = HashPasswordSha256(request.Password);
+            var hashedPassword = HashPassword(request.Password);
 
             var user = await _context.Users
                 .Include(u => u.Role)
@@ -34,19 +34,19 @@ namespace MyRestoranApi.Controllers
 
             if (user == null)
             {
-                return Unauthorized("Nepravil'nyy email ili parol'.");
+                return Unauthorized("Nepravinyy email ili parol.");
             }
 
             if (user.Role == null)
             {
-                return Unauthorized("Rol' pol'zovatelya ne naydena.");
+                return Unauthorized("Rol polzovatelya ne naydena.");
             }
 
             var roleName = user.Role.Name?.Trim();
 
             if (!string.Equals(roleName, "Курьер", StringComparison.OrdinalIgnoreCase))
             {
-                return Unauthorized($"Dostup razreshyon tol'ko kur'yeram. Rol' pol'zovatelya: '{roleName}'");
+                return Unauthorized($"Dostup razreshyon tolko kuryeram. Rol polzovatelya: '{roleName}'");
             }
 
 
@@ -77,12 +77,20 @@ namespace MyRestoranApi.Controllers
         }
 
 
-        private string HashPasswordSha256(string password)
+        private string HashPassword(string password)
         {
-            using var sha256 = SHA256.Create();
-            var bytes = Encoding.UTF8.GetBytes(password);
-            var hash = sha256.ComputeHash(bytes);
-            return BitConverter.ToString(hash).Replace("-", "").ToLower();
+            using (SHA256 sha256 = SHA256.Create())
+            {
+                byte[] bytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                StringBuilder builder = new StringBuilder();
+
+                foreach (byte b in bytes)
+                {
+                    builder.Append(b.ToString("x2")); 
+                }
+
+                return builder.ToString();
+            }
         }
     }
 }
