@@ -29,7 +29,7 @@ namespace MyRestoranApi.Data
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         [ForeignKey("RoleId")]
-        public Role Role { get; set; }
+        public Role? Role { get; set; }
 
     }
 }

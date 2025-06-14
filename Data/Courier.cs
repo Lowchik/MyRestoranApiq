@@ -32,7 +32,8 @@ namespace MyRestoranApi.Data
         [MaxLength(50)]
         public string? VehicleType { get; set; }
 
-        
-        
+        [ForeignKey("UserId")]
+        public User? User { get; set; }
+
     }
 }
