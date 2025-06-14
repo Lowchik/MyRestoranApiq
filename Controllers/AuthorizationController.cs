@@ -34,12 +34,12 @@ namespace MyRestoranApi.Controllers
 
             if (user == null)
             {
-                return Unauthorized("Неверный email или пароль.");
+                return Unauthorized("error email or passsword.");
             }
 
             if (user.Role.Name != "Курьер")
             {
-                return Unauthorized("Доступ разрешён только для курьеров.");
+                return Unauthorized("Dostyp rasreshen tolko courier.");
             }
 
           
@@ -48,12 +48,12 @@ namespace MyRestoranApi.Controllers
 
             if (courier == null)
             {
-                return NotFound("Курьер не найден.");
+                return NotFound("courir ne nayden.");
             }
 
             return Ok(new
             {
-                message = "Успешный вход",
+                message = "vxod good",
                 userId = user.Id,
                 role = user.Role.Name,
                 email = user.Email,
