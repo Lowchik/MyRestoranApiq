@@ -221,8 +221,9 @@ namespace MyRestoranApi.Controllers
             if (order.CourierId != request.CourierId)
                 return BadRequest("Вы не назначены на этот заказ.");
 
-          
+
             order.StatusId = request.StatusId;
+            order.CourierId = request.CourierId;
             order.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
