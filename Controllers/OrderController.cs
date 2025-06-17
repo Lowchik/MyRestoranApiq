@@ -146,11 +146,11 @@ namespace MyRestoranApi.Controllers
         [HttpGet("courier/orders/pending")]
         public async Task<ActionResult<List<OrderResponseDto>>> GetPendingOrders()
         {
-            var pendingStatusId = 1;
+            var activeStatusIds = new List<int> { 1, 2 };
 
             var orders = await _context.Orders
-                .Where(o => o.StatusId == pendingStatusId)
-                .Include(o => o.Customer)
+                .Where(o => activeStatusIds.Contains(o.StatusId))
+                 .Include(o => o.Customer)
                 .Include(o => o.Courier)
                 .Include(o => o.Status)
                 .Include(o => o.OrderType)
