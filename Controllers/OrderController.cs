@@ -200,10 +200,11 @@ namespace MyRestoranApi.Controllers
             if (order == null)
                 return NotFound();
 
-            if (order.StatusId != 1)
+            if (order.StatusId != 1) 
                 return BadRequest("«аказ уже обработан или в другом статусе.");
 
             order.CourierId = request.CourierId;
+            order.StatusId = 2; 
             order.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
