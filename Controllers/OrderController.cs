@@ -144,24 +144,77 @@ namespace MyRestoranApi.Controllers
             return Ok(orders);
         }
 
-        [HttpPatch("{orderId}/status")]
+        [HttpGet("courier/orders/pending")]
+        public async Task<ActionResult<List<OrderResponseDto>>> GetPendingOrders()
+        {
+            var pendingStatusId = 1; 
+
+            var orders = await _context.Orders
+                .Where(o => o.StatusId == pendingStatusId)
+                .Include(o => o.Customer)
+                .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Dish)
+                .Select(o => new OrderResponseDto
+                {
+                    Id = o.Id,
+                    OrderTime = o.OrderTime,
+                    DeliveryAddress = o.DeliveryAddress,
+                    TotalPrice = o.TotalPrice,
+                    CustomerName = o.Customer != null
+                        ? o.Customer.FirstName + " " + o.Customer.LastName
+                        : "Неизвестный клиент",
+                    Items = o.OrderItems.Select(i => new OrderItemDto
+                    {
+                        DishName = i.Dish != null ? i.Dish.Name : "Неизвестное блюдо",
+                        Quantity = i.Quantity
+                    }).ToList()
+                })
+                .OrderBy(o => o.OrderTime)
+                .ToListAsync();
+
+            return Ok(orders);
+        }
+        [HttpPatch("{orderId}/assign-courier")]
+        public async Task<IActionResult> AssignCourier(int orderId, [FromBody] AssignCourierRequest request)
+        {
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order == null)
+                return NotFound();
+
+            if (order.StatusId != 1)
+                return BadRequest("Заказ уже обработан или в другом статусе.");
+
+            order.CourierId = request.CourierId;
+            order.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
+        [HttpPatch("{orderId}/update-status")]
         public async Task<IActionResult> UpdateOrderStatus(int orderId, [FromBody] UpdateStatusRequest request)
         {
             var order = await _context.Orders.FindAsync(orderId);
             if (order == null)
                 return NotFound();
 
+            
+            if (order.CourierId != request.CourierId)
+                return BadRequest("Вы не назначены на этот заказ.");
+
+          
             order.StatusId = request.StatusId;
             order.UpdatedAt = DateTime.UtcNow;
-
-            if (request.StatusId == 2 && request.CourierId.HasValue)
-            {
-                order.CourierId = request.CourierId;
-            }
 
             await _context.SaveChangesAsync();
 
             return NoContent();
         }
+
+        public class AssignCourierRequest
+        {
+            public int CourierId { get; set; }
+        }
+
     }
 }
