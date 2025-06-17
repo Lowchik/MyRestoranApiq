@@ -223,7 +223,6 @@ namespace MyRestoranApi.Controllers
 
 
             order.StatusId = request.StatusId;
-            order.CourierId = request.CourierId;
             order.UpdatedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
