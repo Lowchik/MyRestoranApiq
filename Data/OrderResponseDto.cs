@@ -10,6 +10,8 @@ public class OrderResponseDto
     public string? StatusName { get; set; }
     public string? OrderTypeName { get; set; }
 
+    public int StatusId { get; set; }
+
     public List<OrderItemDto> Items { get; set; } = new();
 }
 
