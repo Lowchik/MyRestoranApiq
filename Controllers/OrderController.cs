@@ -144,6 +144,24 @@ namespace MyRestoranApi.Controllers
             return Ok(orders);
         }
 
+        [HttpPatch("{orderId}/status")]
+        public async Task<IActionResult> UpdateOrderStatus(int orderId, [FromBody] UpdateStatusRequest request)
+        {
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order == null)
+                return NotFound();
 
+            order.StatusId = request.StatusId;
+            order.UpdatedAt = DateTime.UtcNow;
+
+            if (request.StatusId == 2 && request.CourierId.HasValue)
+            {
+                order.CourierId = request.CourierId;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return NoContent();
+        }
     }
 }
