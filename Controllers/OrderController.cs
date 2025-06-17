@@ -147,11 +147,14 @@ namespace MyRestoranApi.Controllers
         [HttpGet("courier/orders/pending")]
         public async Task<ActionResult<List<OrderResponseDto>>> GetPendingOrders()
         {
-            var pendingStatusId = 1; 
+            var pendingStatusId = 1;
 
             var orders = await _context.Orders
                 .Where(o => o.StatusId == pendingStatusId)
                 .Include(o => o.Customer)
+                .Include(o => o.Courier)       
+                .Include(o => o.Status)          
+                .Include(o => o.OrderType)       
                 .Include(o => o.OrderItems)
                     .ThenInclude(oi => oi.Dish)
                 .Select(o => new OrderResponseDto
@@ -163,6 +166,19 @@ namespace MyRestoranApi.Controllers
                     CustomerName = o.Customer != null
                         ? o.Customer.FirstName + " " + o.Customer.LastName
                         : "Неизвестный клиент",
+
+                    CourierName = o.Courier != null
+                        ? o.Courier.FirstName + " " + o.Courier.LastName
+                        : null,
+
+                    StatusName = o.Status != null
+                        ? o.Status.Name
+                        : null,
+
+                    OrderTypeName = o.OrderType != null
+                        ? o.OrderType.Name
+                        : null,
+
                     Items = o.OrderItems.Select(i => new OrderItemDto
                     {
                         DishName = i.Dish != null ? i.Dish.Name : "Неизвестное блюдо",
@@ -174,6 +190,7 @@ namespace MyRestoranApi.Controllers
 
             return Ok(orders);
         }
+
         [HttpPatch("{orderId}/assign-courier")]
         public async Task<IActionResult> AssignCourier(int orderId, [FromBody] AssignCourierRequest request)
         {
